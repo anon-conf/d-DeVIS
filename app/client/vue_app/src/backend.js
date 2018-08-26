@@ -24,15 +24,21 @@ $axios.interceptors.response.use(function (response) {
   return Promise.reject(error)
 })
 
+console.log($axios)
+
 export default {
 
-  fetchResource () {
-    return $axios.get(`resource/xxx`)
-      .then(response => response.data)
-  },
+  // fetchResource () {
+  //   return $axios.get(`resource/xxx`)
+  //     .then(response => response.data)
+  // },
+  //
+  // fetchSecureResource () {
+  //   return $axios.get(`secure-resource/zzz`)
+  //     .then(response => response.data)
+  // }
 
-  fetchSecureResource () {
-    return $axios.get(`secure-resource/zzz`)
-      .then(response => response.data)
-  }
+  'post': $axios.post,
+  'get': $axios.get,
+  'domain': IS_PRODUCTION ? '' : 'http://localhost:5000'
 }

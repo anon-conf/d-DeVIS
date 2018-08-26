@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
-import Api from './views/Api.vue'
+import FileUpload from './views/FileUpload'
+import VisualizePage from './views/VisualizePage'
 
 Vue.use(Router)
 
@@ -13,9 +14,14 @@ export default new Router({
       component: Home
     },
     {
-      path: '/api',
-      name: 'api',
-      component: Api
+      path: '/upload',
+      name: 'upload',
+      component: FileUpload
+    },
+    {
+      path: '/visualize',
+      name: 'visualize',
+      component: VisualizePage
     }
   ]
 })

@@ -1,7 +1,6 @@
 aniso8601==3.0.0
 click==6.7
 flask-restplus==0.10.1
-flask==0.12.2
 gunicorn==19.7.1
 itsdangerous==0.24
 jinja2==2.10
@@ -10,3 +9,15 @@ markupsafe==1.0
 pytz==2018.4
 six==1.11.0
 werkzeug==0.14.1
+keras
+pandas
+opencv-python
+scikit-learn
+librosa
+flask
+pydub
+IPython
+numpy
+matplotlib
+scipy
+

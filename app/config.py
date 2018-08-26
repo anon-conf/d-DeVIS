@@ -9,6 +9,8 @@ class Config(object):
     TESTING = False
     BASE_DIR = os.path.dirname(__file__)
     CLIENT_DIR = os.path.join(BASE_DIR, 'client', 'vue_app')
+    UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
+    STORAGE_DIR = os.path.join(BASE_DIR, 'storage')
 
     if not os.path.exists(CLIENT_DIR):
         raise Exception(
@@ -19,6 +21,7 @@ class Development(Config):
     DEBUG = True
     PRODUCTION = False
     SECRET_KEY = 'SuperSecretKey'
+
 
 
 class Production(Config):
