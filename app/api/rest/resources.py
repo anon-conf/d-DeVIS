@@ -8,6 +8,10 @@ from flask import request, url_for
 from flask_restplus import Api
 import os
 
+import matplotlib
+matplotlib.use('Agg')
+
+
 from app.api.rest.base import BaseResource, SecureResource
 from app.api import api_rest
 
@@ -20,8 +24,6 @@ from flask import current_app as App
 from pydub import AudioSegment
 
 
-import matplotlib
-matplotlib.use('Agg')
 
 
 def sound_plot(wav_file, img_file):
