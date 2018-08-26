@@ -20,6 +20,10 @@ from flask import current_app as App
 from pydub import AudioSegment
 
 
+import matplotlib
+matplotlib.use('Agg')
+
+
 def sound_plot(wav_file, img_file):
     samplerate, data = wavfile.read(wav_file)
     times = np.arange(len(data)) / float(samplerate)
