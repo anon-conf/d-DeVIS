@@ -1,19 +1,33 @@
 [[source]]
-url = "https://pypi.python.org/simple"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
 [packages]
+"aniso8601" = "==3.0.0"
 click = "==6.7"
+flask-restplus = "==0.10.1"
 gunicorn = "==19.7.1"
-Flask = "==0.12.2"
-flask-restplus = "*"
+itsdangerous = "==0.24"
+jsonschema = "==2.6.0"
+pytz = "==2018.4"
+six = "==1.11.0"
+pandas = "*"
+opencv-python = "*"
+scikit-learn = "*"
+librosa = "*"
+pydub = "*"
+ipython = "*"
+numpy = "*"
+matplotlib = "*"
+scipy = "*"
+"Jinja2" = "==2.10"
+MarkupSafe = "==1.0"
+Werkzeug = "==0.14.1"
+Keras = "*"
+Flask = "*"
 
 [dev-packages]
-pytest = "*"
-bumpversion = "*"
-pytest-sugar = "*"
-pytest-cov = "*"
 
 [requires]
 python_version = "3.6"
