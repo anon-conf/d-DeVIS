@@ -14,6 +14,7 @@ matplotlib.use('Agg')
 
 from app.api.rest.base import BaseResource, SecureResource
 from app.api import api_rest
+import logging
 
 from werkzeug.utils import secure_filename
 
@@ -24,7 +25,16 @@ from flask import current_app as App
 from pydub import AudioSegment
 
 
+logger = logging.getLogger('SoundViz-resources.py')
+logger.setLevel(logging.DEBUG)
 
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+
+logger.addHandler(ch)
 
 def sound_plot(wav_file, img_file):
     samplerate, data = wavfile.read(wav_file)
@@ -48,6 +58,7 @@ class Audio(BaseResource):
         f = request.files['file']
         filename = os.path.join(App.config['UPLOAD_DIR'], "audio.wav")
         print(filename)
+        logger.debug(filename)
         f.save(filename)
 
         sound_plot(filename, os.path.join(App.config['STORAGE_DIR'], 'original.png'))
