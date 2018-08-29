@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-row>
+        <b-row align-h="center">
             <img class="image" :src="originalSrc" alt="">
         </b-row>
         <b-row class="mt-3 p-3">
@@ -29,77 +29,80 @@
 </template>
 
 <script>
-import $backend from '../backend'
+    import $backend from '../backend'
 
-import ModificationPanel from '../components/ModificationPanel'
+    import ModificationPanel from '../components/ModificationPanel'
 
-const frontVisibleTransformation = 'perspective(600px) translateX(-50%) rotateX(0deg)'
-const backVisibleTransformation = 'perspective(600px) rotateX(0deg)'
+    const frontVisibleTransformation = 'perspective(600px) translateX(-50%) rotateX(0deg)'
+    const backVisibleTransformation = 'perspective(600px) rotateX(0deg)'
 
-const frontInvisibleTransformation = 'perspective(600px) translateX(-50%) rotateX(-180deg)'
-const backInvisibleTransformation = 'perspective(600px) rotateX(180deg)'
+    const frontInvisibleTransformation = 'perspective(600px) translateX(-50%) rotateX(-180deg)'
+    const backInvisibleTransformation = 'perspective(600px) rotateX(180deg)'
 
-const original = {
-  slicing: 0,
-  loudness: 0,
-  crossfading: 0,
-  fade: 0,
-  repeat: 0,
-  invert: false
-}
-
-export default {
-  name: 'VisualizationPage',
-  components: {
-    modificationPanel: ModificationPanel
-  },
-  methods: {
-    applyModification () {
-      const parameters = this.parameters
-      $backend.get('resources/waveform', {
-        params: parameters
-      }).then(response => console.log(response))
-      this.frontTransformationObject.transform = frontInvisibleTransformation
-      this.backTransformationObject.transform = backVisibleTransformation
-    },
-    reapply () {
-      this.frontTransformationObject.transform = frontVisibleTransformation
-      this.backTransformationObject.transform = backInvisibleTransformation
-    },
-    reset () {
-      Object.assign(this.parameters, original)
-    },
-    fetchOriginalImageSrc () {
-      $backend.get('resources/waveform').then(response => { this.originalSrc = 'http://localhost:5000' + response.data.link })
-    }
-  },
-
-  created () {
-    this.fetchOriginalImageSrc()
-  },
-
-  data () {
-    return {
-      parameters: {
+    const original = {
         slicing: 0,
         loudness: 0,
         crossfading: 0,
         fade: 0,
         repeat: 0,
         invert: false
-      },
-      originalSrc: '',
-      modifiedSrc: '',
-      frontTransformationObject: {
-        transform: frontVisibleTransformation
-      },
-      backTransformationObject: {
-        transform: backInvisibleTransformation
-      }
-
     }
-  }
-}
+
+    export default {
+        name: 'VisualizationPage',
+        components: {
+            modificationPanel: ModificationPanel
+        },
+        methods: {
+            applyModification() {
+                const parameters = this.parameters
+                $backend.get('resources/waveform', {
+                    params: parameters
+                }).then(response => console.log(response))
+                this.frontTransformationObject.transform = frontInvisibleTransformation
+                this.backTransformationObject.transform = backVisibleTransformation
+            },
+            reapply() {
+                this.frontTransformationObject.transform = frontVisibleTransformation
+                this.backTransformationObject.transform = backInvisibleTransformation
+            },
+            reset() {
+                Object.assign(this.parameters, original)
+            },
+            fetchOriginalImageSrc() {
+                $backend.get('resources/waveform').then(response => {
+                    console.log(response)
+                    this.originalSrc = response.data.link
+                })
+            }
+        },
+
+        created() {
+            this.fetchOriginalImageSrc()
+        },
+
+        data() {
+            return {
+                parameters: {
+                    slicing: 0,
+                    loudness: 0,
+                    crossfading: 0,
+                    fade: 0,
+                    repeat: 0,
+                    invert: false
+                },
+                originalSrc: '',
+                modifiedSrc: '',
+                frontTransformationObject: {
+                    transform: frontVisibleTransformation
+                },
+                backTransformationObject: {
+                    transform: backInvisibleTransformation
+                }
+
+            }
+        }
+    }
 
 </script>
 

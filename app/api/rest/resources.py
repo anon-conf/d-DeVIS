@@ -78,27 +78,27 @@ class SoundWaveImage(BaseResource):
 
         if 'slicing' in request.args:
             returnModifiedFile = True
-            slicing = request.args.get('slicing') * 1000
+            slicing = int(request.args.get('slicing'))
             audio = audio[:slicing]
 
         if 'repeat' in request.args:
             returnModifiedFile = True
-            repeat = request.args.get('repeat')
+            repeat = int(request.args.get('repeat'))
             audio = audio * repeat
 
         if 'loudness' in request.args:
             returnModifiedFile = True
-            loudness = request.args.get('loudness')
+            loudness = int(request.args.get('loudness'))
             audio = audio + loudness
 
         if 'fade' in request.args:
             returnModifiedFile = True
-            fade = request.args.get('fade')
+            fade = int(request.args.get('fade'))
             audio = audio.fade_in(fade)
 
         if 'crossfading' in request.args:
             returnModifiedFile = True
-            crossfading = request.args.get('crossfading')
+            crossfading = int(request.args.get('crossfading'))
             duration = audio.duration_seconds
             beginning = audio[:duration // 2]
             end = audio[duration // 2:]
@@ -106,7 +106,7 @@ class SoundWaveImage(BaseResource):
 
         if 'invert' in request.args:
             returnModifiedFile = True
-            invert = request.args.get('invert')
+            invert = bool(request.args.get('invert'))
             if invert == 'true':
                 audio = audio.reverse()
                 
