@@ -7,7 +7,7 @@ from app import app
 class Config(object):
     DEBUG = False
     TESTING = False
-    BASE_DIR = os.path.dirname(__file__)
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     CLIENT_DIR = os.path.join(BASE_DIR, 'client', 'vue_app')
     UPLOAD_DIR = os.path.join(BASE_DIR, 'uploads')
     STORAGE_DIR = os.path.join(BASE_DIR, 'storage')
