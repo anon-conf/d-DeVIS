@@ -7,6 +7,7 @@ from datetime import datetime
 from flask import request, url_for
 from flask_restplus import Api
 import os
+import random
 
 import matplotlib
 matplotlib.use('Agg')
@@ -68,54 +69,67 @@ class Audio(BaseResource):
 
         return {'success': True, 'duration': duration}, 201
 
+def transform(type, value, audio):
+    if not value:
+        return audio
+
+    if type == 'slicing':
+        logger.debug("slicing: {}".format(value))
+        audio = audio[:value]
+
+    elif type == 'crossfading':
+        logger.debug("crossfading {}".format(value))
+        duration = len(audio)
+        beginning = audio[:duration // 2]
+        end = audio[duration // 2:]
+        audio = beginning.append(end, crossfade=value)
+
+    elif type == 'repeat':
+        logger.debug("repeat {}".format(value))
+        audio = audio * value
+
+    elif type == 'loudness':
+        logger.debug("loudness {}".format(value))
+        audio = audio + value
+
+    elif type == 'fade':
+        logger.debug("fade {}".format(value))
+        audio = audio.fade_in(value)
+
+    elif type == 'invert':
+        logger.debug("invert {}".format(value))
+        audio = audio.reverse()
+
+    return audio
 
 @api_rest.route('/resources/waveform')
 class SoundWaveImage(BaseResource):
+    transform_types = 'slicing crossfading repeat loudness fade invert'
 
     def get(self):
         audio = AudioSegment.from_wav(os.path.join(App.config['UPLOAD_DIR'], "audio.wav"))
-        returnModifiedFile = False
+        params = request.args
+        returnModifiedFile = 'slicing' in params
 
-        if 'slicing' in request.args:
-            returnModifiedFile = True
-            slicing = int(request.args.get('slicing'))
-            audio = audio[:slicing]
 
-        if 'repeat' in request.args:
-            returnModifiedFile = True
-            repeat = int(request.args.get('repeat'))
-            audio = audio * repeat
 
-        if 'loudness' in request.args:
-            returnModifiedFile = True
-            loudness = int(request.args.get('loudness'))
-            audio = audio + loudness
 
-        if 'fade' in request.args:
-            returnModifiedFile = True
-            fade = int(request.args.get('fade'))
-            audio = audio.fade_in(fade)
+        for transformation in SoundWaveImage.transform_types.split(" "):
+            audio = transform(transformation, params.get(transformation, type=int), audio)
 
-        if 'crossfading' in request.args:
-            returnModifiedFile = True
-            crossfading = int(request.args.get('crossfading'))
-            duration = audio.duration_seconds
-            beginning = audio[:duration // 2]
-            end = audio[duration // 2:]
-            audio = beginning.append(end, crossfade=crossfading)
 
-        if 'invert' in request.args:
-            returnModifiedFile = True
-            invert = bool(request.args.get('invert'))
-            if invert == 'true':
-                audio = audio.reverse()
-                
-        if returnModifiedFile:
-            modified_filepath = os.path.join(App.config['STORAGE_DIR'], 'modified.wav')
-            audio.export(modified_filepath)
-            sound_plot(modified_filepath, os.path.join(App.config['STORAGE_DIR'], 'modified.png'))
+        logger.debug("{}".format(len(audio)))
 
-        image_url = url_for('static', filename='modified.png') if returnModifiedFile else url_for('static',
+        filename = ""
+
+        if returnModifiedFile :
+            filename = 'modified{}'.format(random.randrange(5000, 50000))
+            modified_filepath = os.path.join(App.config['STORAGE_DIR'], filename + ".wav")
+            audio.export(modified_filepath, format='wav')
+            print(len(audio))
+            sound_plot(modified_filepath, os.path.join(App.config['STORAGE_DIR'], filename + ".png"))
+
+        image_url = url_for('static', filename=filename+".png") if returnModifiedFile else url_for('static',
                                                                                                   filename='original.png')
 
-        return {'link': image_url, 'modified': returnModifiedFile}
+        return {'link': image_url, 'modified': returnModifiedFile, 'duration': audio.duration_seconds}
