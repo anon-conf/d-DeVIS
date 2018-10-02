@@ -53,12 +53,12 @@
         },
         methods: {
             uploadFile() {
-                const formData = new FormData()
+                const formData = new FormData();
 
-                if (!this.file) return
+                if (!this.file) return;
 
-                formData.append('file', this.file)
-                console.log($backend)
+                formData.append('file', this.file);
+                console.log($backend);
 
                 $backend.post(`/resources/audio`,
                     formData,
@@ -70,6 +70,8 @@
                 ).then(response => response.data)
                     .then(response => {
                         if (response.success) {
+                            console.log(response);
+                            localStorage.setItem('fileSendResponse', response);
                             this.$router.push('visualize')
                         }
                     })
@@ -77,64 +79,64 @@
             },
 
             playMedia(event) {
-                this.file = event.target.files[0]
-                const audio = this.$refs['audioControl']
-                const canvas = this.$refs['canvas']
-                this.showAudio = true
-                audio.src = URL.createObjectURL(this.file)
-                audio.load()
-                audio.play()
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-                const src = audioContext.createMediaElementSource(audio)
-                const analyser = audioContext.createAnalyser()
+                this.file = event.target.files[0];
+                const audio = this.$refs['audioControl'];
+                const canvas = this.$refs['canvas'];
+                this.showAudio = true;
+                audio.src = URL.createObjectURL(this.file);
+                audio.load();
+                audio.play();
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const src = audioContext.createMediaElementSource(audio);
+                const analyser = audioContext.createAnalyser();
 
-                canvas.width = window.innerWidth
-                canvas.height = window.innerHeight * 0.7
-                console.log(canvas.height)
-                const ctx = canvas.getContext('2d')
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight * 0.7;
+                console.log(canvas.height);
+                const ctx = canvas.getContext('2d');
 
-                src.connect(analyser)
-                analyser.connect(audioContext.destination)
+                src.connect(analyser);
+                analyser.connect(audioContext.destination);
 
-                analyser.fftSize = 256
+                analyser.fftSize = 256;
 
-                const bufferLength = analyser.frequencyBinCount
-                console.log(bufferLength)
+                const bufferLength = analyser.frequencyBinCount;
+                console.log(bufferLength);
 
-                const dataArray = new Uint8Array(bufferLength)
+                const dataArray = new Uint8Array(bufferLength);
 
-                const WIDTH = canvas.width
-                const HEIGHT = canvas.height
+                const WIDTH = canvas.width;
+                const HEIGHT = canvas.height;
 
-                const barWidth = (WIDTH / bufferLength) * 2.5
-                let barHeight
-                let x = 0
+                const barWidth = (WIDTH / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
 
                 function renderFrame() {
-                    requestAnimationFrame(renderFrame)
+                    requestAnimationFrame(renderFrame);
 
-                    x = 0
+                    x = 0;
 
-                    analyser.getByteFrequencyData(dataArray)
+                    analyser.getByteFrequencyData(dataArray);
 
-                    ctx.fillStyle = '#000'
-                    ctx.fillRect(0, 0, WIDTH, HEIGHT)
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
                     for (let i = 0; i < bufferLength; i++) {
-                        barHeight = dataArray[i]
+                        barHeight = dataArray[i];
 
-                        let r = barHeight + (25 * (i / bufferLength))
-                        let g = 250 * (i / bufferLength)
-                        let b = 50
+                        let r = barHeight + (25 * (i / bufferLength));
+                        let g = 250 * (i / bufferLength);
+                        let b = 50;
 
-                        ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')'
-                        ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight)
+                        ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+                        ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
 
                         x += barWidth + 1
                     }
                 }
 
-                audio.play()
+                audio.play();
                 renderFrame()
             }
         }
