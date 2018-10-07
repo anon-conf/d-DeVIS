@@ -15,56 +15,63 @@
         </div>
 
         <div class="image-grid">
-            <div class="item">1</div>
-            <div class="item">2</div>
-            <div class="item">3</div>
-            <div class="item">4</div>
-            <div class="item">5</div>
-            <div class="item">6</div>
-            <div class="item">7</div>
-            <div class="item">8</div>
-            <div class="item">9</div>
-            <div class="item">10</div>
-            <div class="item">11</div>
-            <div class="item">12</div>
-            <div class="item">13</div>
-            <div class="item">14</div>
-            <div class="item">15</div>
-            <div class="item">16</div>
+            <layer-component v-for="i in 16" v-bind:index="i" :key="i" :layer="activeLayer" :hash="hash" :link-template="link_template"></layer-component>
         </div>
     </div>
 </template>
 
 <script>
+    import LayerComponent from '../components/LayerComponent'
+
     const print = console.log;
+
     export default {
         name: "VisualizeLayer",
-        data(){
+        components: {
+            layerComponent: LayerComponent
+        },
+        created() {
+            let response = localStorage.getItem('serverResponse');
+            if (! response) {
+                alert("The model was not loaded successfully. Try uploading the file again.");
+                this.$router.push('/')
+            } else {
+                response = JSON.parse(response);
+                console.log(response);
+                this.digit = parseInt(response.data);
+                this['link_template'] = response['link_template'];
+                this.hash = response.hash
+            }
+        },
+        data() {
             return {
-                activeLayer: 1
+                activeLayer: 1,
+                digit: '',
+                link_template: "",
+                hash: ""
             }
         },
         methods: {
-            activateLayer(layer){
+            activateLayer(layer) {
                 this.activeLayer = parseInt(layer);
             }
         },
         computed: {
-            layerOneClass(){
+            layerOneClass() {
                 return {
                     'layer': true,
                     'layer__step--active': this.activeLayer === 1,
                     'layer__step--inactive': this.activeLayer !== 1,
                 }
             },
-            layerTwoClass(){
+            layerTwoClass() {
                 return {
                     'layer': true,
                     'layer__step--active': this.activeLayer === 2,
                     'layer__step--inactive': this.activeLayer !== 2,
                 }
             },
-            layerThreeClass(){
+            layerThreeClass() {
                 return {
                     'layer': true,
                     'layer__step--active': this.activeLayer === 3,
@@ -80,6 +87,7 @@
         height: 100vh;
         padding-top: 20px;
     }
+
     .header {
 
         height: 72px;
@@ -122,7 +130,7 @@
     }
 
     .layer__step .layer__label {
-        color: rgba(0,0,0,0.38)
+        color: rgba(0, 0, 0, 0.38)
     }
 
     .layer__step--active .layer__label {

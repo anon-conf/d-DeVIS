@@ -71,7 +71,7 @@
                     .then(response => {
                         if (response.success) {
                             console.log(response);
-                            localStorage.setItem('fileSendResponse', response);
+                            localStorage.setItem('serverResponse', JSON.stringify(response));
                             this.$router.push('visualize')
                         }
                     })

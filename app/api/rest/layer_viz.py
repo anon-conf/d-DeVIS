@@ -1,119 +1,143 @@
-import os
 import random
 
-import matplotlib.pyplot as plt
-import numpy as np
 from flask import current_app as App
-from keras import backend as K
-from keras.models import load_model
-from scipy import signal
-from scipy.fftpack import fft
-from scipy.io import wavfile
+
+from .helper import *
+
+# global graph,model
+### Parameters ###
+fft_size = 320  # window size for the FFT
+step_size = fft_size / 6  # distance to slide along the window (in time)
+spec_thresh = 4  # threshold for spectrograms (lower filters out more noise)
+lowcut = 500  # Hz # Low cut for our butter bandpass filter
+highcut = 8000  # Hz # High cut for our butter bandpass filter
+# For mels
+n_mel_freq_components = 64  # number of mel frequency channels
+shorten_factor = 10  # how much should we compress the x-axis (time)
+start_freq = 300  # Hz # What frequency to start sampling our melS from
+end_freq = 8000  # Hz # What frequency to stop sampling our melS from
 
 
-def custom_fft(y, fs):
-    T = 1.0 / fs
-    N = y.shape[0]
-    yf = fft(y)
-    xf = np.linspace(0.0, 1.0/(2.0*T), N//2)
-    vals = 2.0/N * np.abs(yf[0:N//2])
-    return xf, vals
-
-def log_specgram(audio, sample_rate, window_size=20,
-                 step_size=10, eps=1e-10):
-    nperseg = int(round(window_size * sample_rate / 1e3))
-    noverlap = int(round(step_size * sample_rate / 1e3))
-    freqs, times, spec = signal.spectrogram(audio,
-                                    fs=sample_rate,
-                                    window='hann',
-                                    nperseg=nperseg,
-                                    noverlap=noverlap,
-                                    detrend=False)
-    return freqs, times, np.log(spec.T.astype(np.float32) + eps)
-  
-def pad_audio(samples):
-    L = 16000
-    if len(samples) >= L: return samples
-    else: return np.pad(samples, pad_width=(L - len(samples), 0), mode='constant', constant_values=(0, 0))
-
-def chop_audio(samples, L=16000, num=20):
-    for i in range(num):
-        beg = np.random.randint(0, len(samples) - L)
-        yield samples[beg: beg + L]
-
-
-def model_abspath(fname):
-    return os.path.join(os.path.dirname(__file__),fname )
-
+def static_filepath(filepath):
+    return os.path.join(App.config['STORAGE_DIR'], filepath)
 
 def first_layerr(test_input, hash):
     K.clear_session()
-    first_layer = load_model(model_abspath('first_layer.hdf5'))
+    first_layer = load_model(os.path.join(os.path.dirname(__file__), 'first_layer.hdf5'))
     out = first_layer.predict(test_input)
     out1 = out[0, :, :, :]
     bla = first_layer.layers[0].get_weights()[0]
     plt.plot(bla.flatten())
-    plt.savefig(os.path.join(App.config['STORAGE_DIR'], str(hash)+'first_distribution.png'))
+    plt.savefig(static_filepath(hash+'first_distribution.png'))
     plt.clf()
-    for i in range(0,16):
+    for i in range(0, 16):
         out1 = out[0, :, :, i]
-        filename = "{}first{}.png".format(hash, i)
-        plt.imsave(os.path.join(App.config['STORAGE_DIR'], filename), out1)
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size),
+                                                         step_size=int(step_size), log=True, n_iter=10)
+        wavfile.write(static_filepath(hash+'first' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
+        plt.imsave(static_filepath(hash+'first' + str(i+1) + '.png'), out1)
         plt.clf()
     return
 
 
 def second_layerr(test_input, hash):
     K.clear_session()
-    second_layer = load_model(model_abspath('second_layer.hdf5'))
+    second_layer = load_model(os.path.join(os.path.dirname(__file__), 'second_layer.hdf5'))
     out = second_layer.predict(test_input)
     out1 = out[0, :, :, :]
     bla = second_layer.layers[4].get_weights()[0]
     plt.plot(bla.flatten())
-    plt.savefig(os.path.join(App.config['STORAGE_DIR'], str(hash)+'second_distribution.png'))
+    plt.savefig(static_filepath(hash+'second_distribution.png'))
     plt.clf()
-    
-    for i in range(0,32):
+
+    for i in range(0, 16):
         out1 = out[0, :, :, i]
-        filename = '{}second{}.png'.format(hash, i)
-        plt.imsave(os.path.join(App.config['STORAGE_DIR'], filename), out1)
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 2),
+                                                         step_size=int(step_size), log=True, n_iter=10)
+        wavfile.write(static_filepath(hash+'second' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
+        plt.imsave(static_filepath(hash+'second' + str(i+1) + '.png'), out1)
         plt.clf()
     return
 
 
 def third_layerr(test_input, hash):
     K.clear_session()
-    third_layer = load_model(model_abspath('third_layer.hdf5'))
+    third_layer = load_model(os.path.join(os.path.dirname(__file__), 'third_layer.hdf5'))
     out = third_layer.predict(test_input)
     out1 = out[0, :, :, :]
     bla = third_layer.layers[8].get_weights()[0]
     plt.plot(bla.flatten())
-    plt.savefig(os.path.join(App.config['STORAGE_DIR'], str(hash)+'third_distribution.png'))
+    plt.savefig(static_filepath(hash+'third_distribution.png'))
     plt.clf()
-   
-    for i in range(0,32):
+
+    for i in range(0, 16):
         out1 = out[0, :, :, i]
-        filename = '{}third{}.png'.format(hash, i)
-        plt.imsave(os.path.join(App.config['STORAGE_DIR'], filename), out1)
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 4),
+                                                         step_size=int(step_size) - 15, log=True, n_iter=10)
+        wavfile.write(static_filepath(hash+'third' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
+        plt.imsave(static_filepath(hash+'third' + str(i+1) + '.png'), out1)
     return
 
-def predict(filename):
-    K.clear_session()
-    print(os.path.dirname(__file__))
 
-    complete_layer = load_model(model_abspath('cnn_final.hdf5'))
+def digit_predict(filename):
+    K.clear_session()
+    # graph = tf.get_default_graph()
     sample_rate, samples = wavfile.read(filename)
-    samples = pad_audio(samples)
-    new_sample_rate = 8000
-    resampled = signal.resample(samples, int(new_sample_rate / sample_rate * samples.shape[0]))
-    _, _, specgram = log_specgram(resampled, sample_rate=new_sample_rate)
-    test_input =  specgram.reshape(1,specgram.shape[0],specgram.shape[1],1)
-    hash = random.getrandbits(64)
+    resampled = signal.resample(samples, int(8000 / sample_rate * samples.shape[0]))
+    samples = pad_audio(resampled)
+    specgram = pretty_spectrogram(samples.astype('float64'), fft_size=fft_size,
+                                  step_size=int(step_size), log=True, thresh=spec_thresh)
+    test_input = specgram.reshape(1, specgram.shape[0], specgram.shape[1], 1)
+    hash = str(random.getrandbits(64))
     first_layerr(test_input, hash)
     second_layerr(test_input, hash)
     third_layerr(test_input, hash)
+    out = 0
+    complete_layer = get_model()
+    complete_layer.load_weights(os.path.join(os.path.dirname(__file__), 'model_weights.h5'))
     out = complete_layer.predict(test_input)
     out1 = out[0, :]
     val = np.argmax(out1).tolist()
-    print(val)
-    return {'data': val, hash: hash}
+
+    dic = {'data': val, 'hash': hash}
+    return dic
+
+
+# digit_predict()
+
+
+def calculate():
+    test_model = get_model()
+    test_model.load_weights(os.path.join(os.path.dirname(__file__), 'model_weights.h5'))
+
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.save('fourth_layer.hdf5')
+
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.save('third_layer.hdf5')
+
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.save('second_layer.hdf5')
+
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.pop()
+    test_model.save('first_layer.hdf5')
+    print("calculation done.")
+    K.clear_session()
+    return
+
+# calculate()

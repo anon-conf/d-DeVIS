@@ -26,6 +26,7 @@
                         <modification-panel :parameters="parameters" :options="options"></modification-panel>
                         <br>
                         <button @click="applyModification" class="btn btn-primary m-1 float-right">Apply</button>
+                        <button @click="gotoLayer" class="btn btn-outline-primary m-1 float-right">Visualize Layers</button>
                         <button @click="reset" class="btn btn-light m-1 float-right">Reset</button>
                     </div>
 
@@ -88,6 +89,9 @@
                     this.options.maxSlicing = Math.floor(response.data.duration * 1000)
 
                 })
+            },
+            gotoLayer(){
+                this.$router.push('/layers')
             }
         },
 
