@@ -1,7 +1,9 @@
 import os
 import random
-
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 import numpy as np
 from flask import current_app as App
 from keras import backend as K
@@ -10,6 +12,7 @@ from scipy import signal
 from scipy.io import wavfile
 
 from .helper import *
+
 
 # global graph,model
 ### Parameters ###

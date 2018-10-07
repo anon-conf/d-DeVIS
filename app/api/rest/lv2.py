@@ -1,48 +1,8 @@
-from scipy.io import wavfile
-from matplotlib import pyplot as plt
-import numpy as np
-import IPython
-from pydub import AudioSegment
-from flask import Flask, render_template, jsonify, request
-import numpy as np
-import librosa
-import os
-from sklearn.model_selection import train_test_split
-import glob
-from pydub import AudioSegment
-import IPython
-import cv2
-import matplotlib.pyplot as plt
-import pandas as pd
-import pickle
-import tensorflow as tf
+from flask import jsonify
 
-from keras.utils import to_categorical
-from keras.layers import Input, Add, Dropout, Dense, GRU, Bidirectional, Masking, TimeDistributed, LSTM, Conv1D, \
-    Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D
-from keras.models import Model, load_model, Sequential
-from keras.preprocessing import image
-from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import layer_utils, plot_model, to_categorical
-from keras.utils.data_utils import get_file
-from keras.applications.imagenet_utils import preprocess_input
-from keras.applications import InceptionV3
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-from keras import backend as K
-from keras import optimizers, losses, activations, models
-from keras.initializers import glorot_uniform
-from scipy.fftpack import fft
-from scipy.io import wavfile
-from scipy import signal
-import keras
-from keras import backend as k
-import matplotlib.pyplot as plt
-import numpy as np
-from flask import Flask, render_template, request
-from werkzeug import secure_filename
-from helper import *
+from .helper import *
 
-global graph, model
+# global graph,model
 ### Parameters ###
 fft_size = 320  # window size for the FFT
 step_size = fft_size / 6  # distance to slide along the window (in time)
@@ -56,85 +16,97 @@ start_freq = 300  # Hz # What frequency to start sampling our melS from
 end_freq = 8000  # Hz # What frequency to stop sampling our melS from
 
 
-def first_layerr(test_input):
+def first_layerr(test_input, hash):
     K.clear_session()
     first_layer = load_model('first_layer.hdf5')
     out = first_layer.predict(test_input)
     out1 = out[0, :, :, :]
     bla = first_layer.layers[0].get_weights()[0]
     plt.plot(bla.flatten())
-    plt.savefig('first_distribution.png')
+    plt.savefig(hash+'first_distribution.png')
     plt.clf()
     for i in range(0, 16):
         out1 = out[0, :, :, i]
-        plt.imsave('first' + str(i) + '.png', out1)
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size),
+                                                         step_size=int(step_size), log=True, n_iter=10)
+        wavfile.write(hash+'first' + str(i) + '.wav', 8000, recovered_audio_orig)
+        plt.imsave(hash+'first' + str(i) + '.png', out1)
         plt.clf()
     return
 
 
-def second_layerr(test_input):
+def second_layerr(test_input, hash):
     K.clear_session()
     second_layer = load_model('second_layer.hdf5')
     out = second_layer.predict(test_input)
     out1 = out[0, :, :, :]
     bla = second_layer.layers[4].get_weights()[0]
     plt.plot(bla.flatten())
-    plt.savefig('second_distribution.png')
+    plt.savefig(hash+'second_distribution.png')
     plt.clf()
 
     for i in range(0, 16):
         out1 = out[0, :, :, i]
-        plt.imsave('second' + str(i) + '.png', out1)
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 2),
+                                                         step_size=int(step_size), log=True, n_iter=10)
+        wavfile.write(hash+'second' + str(i) + '.wav', 8000, recovered_audio_orig)
+        plt.imsave(hash+'second' + str(i) + '.png', out1)
         plt.clf()
     return
 
 
-def third_layerr(test_input):
+def third_layerr(test_input, hash):
     K.clear_session()
     third_layer = load_model('third_layer.hdf5')
     out = third_layer.predict(test_input)
     out1 = out[0, :, :, :]
     bla = third_layer.layers[8].get_weights()[0]
     plt.plot(bla.flatten())
-    plt.savefig('third_distribution.png')
+    plt.savefig(hash+'third_distribution.png')
     plt.clf()
 
     for i in range(0, 16):
         out1 = out[0, :, :, i]
-        plt.imsave('third' + str(i) + '.png', out1)
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 4),
+                                                         step_size=int(step_size) - 15, log=True, n_iter=10)
+        wavfile.write(hash+'third' + str(i) + '.wav', 8000, recovered_audio_orig)
+        plt.imsave(hash+'third' + str(i) + '.png', out1)
     return
 
 
-def digit_predict():
+def digit_predict(filename, hash):
     K.clear_session()
-    graph = tf.get_default_graph()
-    complete_layer = load_model('model_weights.hdf5')
-    sample_rate, samples = wavfile.read('sliced.wav')
+    # graph = tf.get_default_graph()
+    sample_rate, samples = wavfile.read(filename)
     resampled = signal.resample(samples, int(8000 / sample_rate * samples.shape[0]))
     samples = pad_audio(resampled)
     specgram = pretty_spectrogram(samples.astype('float64'), fft_size=fft_size,
                                   step_size=int(step_size), log=True, thresh=spec_thresh)
     test_input = specgram.reshape(1, specgram.shape[0], specgram.shape[1], 1)
-    first_layerr(test_input)
-    second_layerr(test_input)
-    third_layerr(test_input)
-    '''
-    with graph.as_default():
-        out = complete_layer.predict(test_input)
+    first_layerr(test_input, hash)
+    second_layerr(test_input, hash)
+    third_layerr(test_input, hash)
+    out = 0
+    complete_layer = get_model()
+    complete_layer.load_weights('model_weights.h5')
+    out = complete_layer.predict(test_input)
+    # K.clear_session()
     out1 = out[0, :]
     val = np.argmax(out1).tolist()
-    print(val)
-    '''
-    dic = {'data': 'val'}
-    return jsonify(dic)
+    # print(val)
+
+    dic = {'data': val}
+    return dic
 
 
-digit_predict()
+# digit_predict()
 
 
 def calculate():
-    test_model = load_model('model_weights.hdf5')
+    test_model = get_model()
+    test_model.load_weights('model_weights.h5')
 
+    test_model.pop()
     test_model.pop()
     test_model.pop()
     test_model.pop()
