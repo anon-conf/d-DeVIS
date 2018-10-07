@@ -1,39 +1,13 @@
-import numpy as np
-import librosa
-import os
-from sklearn.model_selection import train_test_split
-import glob
-from pydub import AudioSegment
-import IPython
-import cv2
-import matplotlib.pyplot as plt
-import pandas as pd
-import pickle
-from keras.utils import to_categorical
-from keras.layers import Input, Add, Dropout, Dense, GRU, Bidirectional, Masking, TimeDistributed, LSTM, Conv1D, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D, AveragePooling2D, MaxPooling2D, GlobalMaxPooling2D
-from keras.models import Model, load_model, Sequential
-from keras.preprocessing import image
-from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import layer_utils, plot_model, to_categorical
-from keras.utils.data_utils import get_file
-from keras.applications.imagenet_utils import preprocess_input
-from keras.applications import InceptionV3
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-from keras import backend as K
-from keras import optimizers, losses, activations, models
-from keras.initializers import glorot_uniform
-from scipy.fftpack import fft
-from scipy.io import wavfile
-from scipy import signal
-import keras
 import copy
-from keras import backend as k
-import matplotlib.pyplot as plt
+
 import numpy as np
-from scipy.io import wavfile
+import pandas as pd
+from keras.initializers import glorot_uniform
+from keras.layers import Dropout, Dense, BatchNormalization, Flatten, Conv2D, MaxPooling2D
+from keras.models import Sequential
+from scipy import signal
+from scipy.fftpack import fft
 from scipy.signal import butter, lfilter
-import scipy.ndimage
-from scipy.io import wavfile
 
 
 # Most of the Spectrograms and Inversion are taken from: https://gist.github.com/kastnerkyle/179d6e9a88202ab0a2fe
