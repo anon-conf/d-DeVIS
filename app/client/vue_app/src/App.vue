@@ -1,12 +1,8 @@
 <template>
-    <div id="app">
+    <v-app>
+        <router-view></router-view>
 
-        <b-container fluid>
-            <div class="header"></div>
-            <router-view/>
-        </b-container>
-
-    </div>
+    </v-app>
 </template>
 
 <style lang="scss">
@@ -16,7 +12,6 @@
         -moz-osx-font-smoothing: grayscale;
         /*text-align: center;*/
         color: #2c3e50;
-        /*margin-top: 60px;*/
     }
 
 </style>
