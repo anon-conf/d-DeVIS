@@ -1,6 +1,8 @@
 <template>
     <div id="app">
+
         <b-container fluid>
+            <div class="header"></div>
             <router-view/>
         </b-container>
 

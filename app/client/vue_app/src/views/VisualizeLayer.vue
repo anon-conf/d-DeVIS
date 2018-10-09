@@ -1,5 +1,14 @@
 <template>
     <div class="full-screen">
+        <v-toolbar fixed>
+            <v-toolbar-title>Image Layers</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="hidden-sm-and-down">
+                <v-btn flat>Link One</v-btn>
+                <v-btn flat>Link Two</v-btn>
+                <v-btn flat>Link Three</v-btn>
+            </v-toolbar-items>
+        </v-toolbar>
         <div class="header">
             <div @click="activateLayer(1)" :class="layerOneClass"><span class="layer__step">1</span>
                 <div class="layer__label">Name of step 1</div>
@@ -34,7 +43,7 @@
             let response = localStorage.getItem('serverResponse');
             if (! response) {
                 alert("The model was not loaded successfully. Try uploading the file again.");
-                this.$router.push('/')
+                // this.$router.push('/')
             } else {
                 response = JSON.parse(response);
                 console.log(response);

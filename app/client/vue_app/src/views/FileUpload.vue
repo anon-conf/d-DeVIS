@@ -2,8 +2,8 @@
     <div class="body">
         <b-container>
             <b-row class="mt-5">
-                <b-col class="mt-5">
-                    <b-container class="mt-5">
+                <b-col>
+                    <b-container>
 
                         <div class="content">
 
