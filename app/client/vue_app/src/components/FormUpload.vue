@@ -1,8 +1,8 @@
 <template>
     <form enctype="multipart/form-data">
-        <input type="file" name="file" id="file-4" @change="uploadFile"
+        <input type="file" name="file" id="audioInput" @change="uploadFile"
                class="inputfile inputfile-4"/>
-        <label>
+        <label for="audioInput">
             <figure>
                 <svg xmlns="http://www.w3.org/2000/svg" width="5" height="5"
                      viewBox="0 0 20 17">
@@ -120,8 +120,8 @@
 
     .inputfile:focus + label,
     .inputfile.has-focus + label {
-        outline: 1px dotted #000;
-        outline: -webkit-focus-ring-color auto 5px;
+        /*outline: 1px dotted #000;*/
+        /*outline: -webkit-focus-ring-color auto 5px;*/
     }
 
     .inputfile + label * {
