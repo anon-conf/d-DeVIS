@@ -12,29 +12,28 @@
             </figure>
             <span>Upload</span>
         </label>
-        <input type="file" name="file" @change="uploadFile"
-               class="inputfile inputfile-4"/>
-        <label>
+        <span @click="onRecordClicked" class="record-btn">
             <figure>
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                     width="5" height="5" viewBox="0 0 60 60">
-                    <g>
-                        <path d="M44,28c-0.552,0-1,0.447-1,1v6c0,7.72-6.28,14-14,14s-14-6.28-14-14v-6c0-0.553-0.448-1-1-1s-1,0.447-1,1v6   c0,8.485,6.644,15.429,15,15.949V56h-5c-0.552,0-1,0.447-1,1s0.448,1,1,1h12c0.552,0,1-0.447,1-1s-0.448-1-1-1h-5v-5.051   c8.356-0.52,15-7.465,15-15.949v-6C45,28.447,44.552,28,44,28z"
-                              fill="#FFFFFF"></path>
-                        <path d="M29,46c6.065,0,11-4.935,11-11V11c0-6.065-4.935-11-11-11S18,4.935,18,11v24C18,41.065,22.935,46,29,46z"
-                              fill="#FFFFFF"></path>
-                    </g>
-                </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                 width="5" height="5" viewBox="0 0 60 60">
+                <g>
+                    <path d="M44,28c-0.552,0-1,0.447-1,1v6c0,7.72-6.28,14-14,14s-14-6.28-14-14v-6c0-0.553-0.448-1-1-1s-1,0.447-1,1v6   c0,8.485,6.644,15.429,15,15.949V56h-5c-0.552,0-1,0.447-1,1s0.448,1,1,1h12c0.552,0,1-0.447,1-1s-0.448-1-1-1h-5v-5.051   c8.356-0.52,15-7.465,15-15.949v-6C45,28.447,44.552,28,44,28z"
+                          fill="#FFFFFF"></path>
+                    <path d="M29,46c6.065,0,11-4.935,11-11V11c0-6.065-4.935-11-11-11S18,4.935,18,11v24C18,41.065,22.935,46,29,46z"
+                          fill="#FFFFFF"></path>
+                </g>
+            </svg>
             </figure>
+
             <span>Record</span>
-        </label>
+        </span>
         <br>
         <div v-if="uploading">
-            <v-progress-circular v-model="uploadProgress" :size="50" :rotate="-90"
+            <v-progress-circular :indeterminate="isInfinite"
                                  :color="'#0101d5'"></v-progress-circular>
             <br>
             <br>
-            <p>Uploading</p>
+            <p>Predicting</p>
         </div>
     </form>
 </template>
@@ -47,7 +46,9 @@
         data() {
             return {
                 uploading: false,
-                uploadProgress: 0
+                uploadProgress: 0,
+                isInfinite: true,
+                message: 'Uploading'
             }
         },
 
@@ -73,7 +74,7 @@
                     }
                 };
 
-                $backend.post(`/resources/audio`, formData, options)
+                $backend.post(`/api/resources/audio`, formData, options)
                     .then(response => response.data)
                     .then(response => {
                         if (response.success) {
@@ -83,6 +84,10 @@
                     })
                     .catch(error => console.log(error))
 
+            },
+            onRecordClicked(){
+                console.log('record');
+                this.$emit('on-recorder-selected');
             }
         }
     }
@@ -98,6 +103,22 @@
         z-index: -1;
         outline: none;
     }
+
+    .record-btn {
+        max-width: 80%;
+        font-size: 1.25rem;
+        /* 20px */
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        display: inline-block;
+        overflow: hidden;
+        padding: 0.625rem 1.25rem;
+        outline: none;
+        margin-bottom: 7px;
+    }
+
 
     .inputfile + label {
         max-width: 80%;
@@ -129,7 +150,7 @@
         /* in case of FastClick lib use */
     }
 
-    .inputfile + label svg {
+    .inputfile + label svg, .record-btn svg {
         width: 1em;
         height: 1em;
         vertical-align: middle;
@@ -146,11 +167,11 @@
         color: #0c0c40;
     }
 
-    .inputfile-4 + label figure {
+    .inputfile-4 + label figure, .record-btn figure {
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        background-color: #0101d5;
+        background-color: #1d64c0;
         display: block;
         padding: 20px;
         margin: 0 auto 10px;
@@ -158,12 +179,13 @@
 
     .inputfile-4:focus + label figure,
     .inputfile-4.has-focus + label figure,
-    .inputfile-4 + label:hover figure {
-        background-color: #1616ab;
+    .inputfile-4 + label:hover figure,
+    .record-btn:hover figure{
+        background-color: #2386e3;
         outline: none;
     }
 
-    .inputfile-4 + label svg {
+    .inputfile-4 + label svg, .record-btn svg {
         width: 100%;
         height: 100%;
         fill: #fff;
