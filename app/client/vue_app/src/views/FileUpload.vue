@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import UploadForm from '../components/FormUpload'
+    import UploadForm from '../components/AudioUploadOptions'
 
     export default {
         name: "Login",

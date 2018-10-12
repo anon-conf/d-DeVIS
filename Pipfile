@@ -27,6 +27,7 @@ Werkzeug = "==0.14.1"
 Keras = "*"
 Flask = "*"
 flask_cors = "*"
+tensorflow = "*"
 
 [dev-packages]
 

@@ -1,56 +1,83 @@
 <template>
     <div class="full-screen">
-        <v-toolbar fixed>
+        <v-toolbar fixed dark color="primary">
             <v-toolbar-title>Image Layers</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn @click="activateLayer(1)" :class="layerOneClass" flat>Layer 1</v-btn>
-                <v-btn @click="activateLayer(2)" :class="layerTwoClass" flat>Layer 2</v-btn>
-                <v-btn @click="activateLayer(3)" :class="layerThreeClass">Layer 3</v-btn>
-
-            </v-toolbar-items>
-            <v-spacer></v-spacer>
-            <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn @click="dialog = true" flat>Compare</v-btn>
+                <v-btn @click="modify = true" flat>Modify</v-btn>
+                <v-btn @click="newAudio = true" flat>Compare</v-btn>
 
             </v-toolbar-items>
 
         </v-toolbar>
         <div>
             <v-dialog
-                    v-model="dialog"
+                    v-model="newAudio"
                     width="500"
             >
 
                 <v-card>
-                    <v-card-title
-                            class="headline grey lighten-2"
-                            primary-title
-                    >
-                       Upload New File
-                    </v-card-title>
                     <v-card-text>
-                    <upload-form @upload="onUpload"></upload-form>
+                        <upload-form @upload="onUpload"></upload-form>
 
                     </v-card-text>
 
 
                 </v-card>
             </v-dialog>
-       </div>
+        </div>
+        <div>
+            <v-dialog v-model="modify" fullscreen hide-overlay transition="dialog-bottom-transition">
+                <v-card>
+                    <v-toolbar dark color="primary">
+                        <v-btn icon dark @click.native="modify = false">
+                            <v-icon>keyboard_backspace</v-icon>
+                        </v-btn>
+                        <v-toolbar-title>Modify Sound</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-toolbar-items>
+                            <v-btn dark flat @click.native="dialog = false">Apply</v-btn>
+                        </v-toolbar-items>
+                    </v-toolbar>
 
+                </v-card>
+            </v-dialog>
+        </div>
 
-        <div class="image-grid">
-            <layer-component v-for="i in 16" v-bind:index="i" :key="i" :layer="activeLayer" :hash="hash" :link-template="link_template"></layer-component>
+        <div class="visualization">
+            <div class="image-zoom">
+                <div class="component">
+                    <layer-component :index="currentIndex" :layer="currentLayer" :hash="hash"
+                                     :link-template="link_template"></layer-component>
+                </div>
+            </div>
+            <div>
+                <v-tabs fixed-tabs v-model="activeLayer">
+                    <v-tab
+                            v-for="n in 3"
+                            :key="n"
+                    >
+                        Layer {{ n }}
+                    </v-tab>
+                </v-tabs>
+                <div class="image-grid">
+
+                <img :src="imageSrc(i)" @mouseover="display" v-for="i in 16" :data-index="i"
+                     :data-layer="activeLayer" alt="">
+                <!--<layer-component v-for="i in 16" v-bind:index="i" :key="i" :layer="activeLayer" :hash="hash" :link-template="link_template"></layer-component>-->
+            </div>
+            </div>
+
         </div>
     </div>
 </template>
 
 <script>
     import LayerComponent from '../components/LayerComponent'
-    import UploadForm from '../components/FormUpload'
+    import UploadForm from '../components/AudioUploadOptions'
 
     const print = console.log;
+    const layers = {1: 'first', 2: 'second', 3: 'third'};
 
     export default {
         name: "VisualizeLayer",
@@ -60,7 +87,7 @@
         },
         created() {
             let response = localStorage.getItem('serverResponse');
-            if (! response) {
+            if (!response) {
                 alert("The model was not loaded successfully. Try uploading the file again.");
                 // this.$router.push('/')
             } else {
@@ -77,15 +104,28 @@
                 digit: '',
                 link_template: "",
                 hash: "",
-                dialog:false
+                dialog: false,
+                currentIndex: 1,
+                currentLayer: 1,
+                modify: false,
+                newAudio: false
             }
         },
         methods: {
             activateLayer(layer) {
                 this.activeLayer = parseInt(layer);
             },
-            onUpload(data){
+            onUpload(data) {
 
+            },
+            display(event) {
+                let target = event.target;
+                this.currentLayer = parseInt(target.dataset.layer);
+                this.currentIndex = parseInt(target.dataset.index);
+            },
+            imageSrc(index) {
+                let filename = `${this.hash}${layers[this.activeLayer]}${index}.png`;
+                return this['link_template'].replace('dummy', filename);
             }
         },
         computed: {
@@ -129,10 +169,12 @@
         justify-content: space-between;
         box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
     }
+
     .v-card__text {
         text-align: center;
+        min-height: 350px;
+        padding-top: 50px;
     }
-
 
     .layer-divider {
         display: block;
@@ -147,18 +189,41 @@
         transition: inherit;
     }
 
+    .layer {
+        transition: none !important;
+    }
+
     .layer__step--active {
-        border-bottom: 1px solid blue;
+        border-bottom: 2px solid white;
+        font-weight: 700;
+    }
+
+    .visualization {
+        margin: 10% auto;
+        display: flex;
+        height: 40%;
+        width: 70%;
     }
 
     .image-grid {
-        margin-top: 2%;
+        margin: 10px;
         display: grid;
-        grid-template-columns: auto auto auto auto;
-        grid-template-rows: auto auto auto auto;
-        grid-gap: 10px 10px;
-        height: 80%;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: 100px 100px;
+        grid-gap: 30px 30px;
+        flex: 2
+
         /*background-color: #0c5460;*/
+    }
+
+    .image-grid img {
+        width: 100px;
+        height: 100px;
+        align-self: start;
+    }
+
+    .image-grid img:hover {
+        border: 3px solid #2979e3
     }
 
     .image-grid .item {
@@ -167,6 +232,17 @@
         padding: 20px;
         font-size: 30px;
         text-align: center;
+    }
+
+    .image-zoom {
+        flex: 1;
+        margin: 10px
+    }
+
+    .image-zoom .component {
+        width: 250px;
+        height: 250px;
+        float: right;
     }
 
 </style>

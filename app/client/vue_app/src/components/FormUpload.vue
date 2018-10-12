@@ -33,7 +33,7 @@
                                  :color="'#0101d5'"></v-progress-circular>
             <br>
             <br>
-            <p>Predicting</p>
+            <p class="message">Predicting</p>
         </div>
     </form>
 </template>
@@ -68,9 +68,6 @@
                 let options = {
                     headers: {
                         'Content-Type': 'multipart/form-data'
-                    },
-                    onUploadProgress: progress => {
-                        this.uploadProgress = progress.loaded;
                     }
                 };
 
@@ -104,11 +101,19 @@
         outline: none;
     }
 
-    .record-btn {
-        max-width: 80%;
+    .WEIGHTY_TEXT,
+    .record-btn,
+    .message,
+    .wieghty_text {
         font-size: 1.25rem;
         /* 20px */
         font-weight: 700;
+    }
+
+
+    .record-btn {
+        max-width: 80%;
+
         text-overflow: ellipsis;
         white-space: nowrap;
         cursor: pointer;

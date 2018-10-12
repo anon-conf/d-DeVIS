@@ -75,8 +75,6 @@
     .play-button {
         display: block;
         position: absolute;
-        opacity: 0;
-        transition: opacity .2s ease-in;
         height: 54px;
         width: 54px;
         left: 0;
@@ -93,9 +91,7 @@
         height: 36px;
     }
 
-    .img-container:hover .play-button {
-        opacity: 1;
-    }
+
 
     p {
         text-align: center;
