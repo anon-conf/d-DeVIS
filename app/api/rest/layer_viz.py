@@ -98,7 +98,7 @@ def digit_predict(filename):
     specgram = pretty_spectrogram(samples.astype('float64'), fft_size=fft_size,
                                   step_size=int(step_size), log=True, thresh=spec_thresh)
     hash = str(random.getrandbits(64))
-    # fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 6))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 6))
     # cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     # fig.colorbar(cax)
     # plt.title('Original Spectrogram')
