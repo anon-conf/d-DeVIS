@@ -1,83 +1,124 @@
 <template>
-    <div class="full-screen">
-        <v-toolbar fixed dark color="primary">
-            <v-toolbar-title>Image Layers</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn @click="modify = true" flat>Modify</v-btn>
-                <v-btn @click="newAudio = true" flat>Compare</v-btn>
+  <div class="full-screen">
 
-            </v-toolbar-items>
+    <v-toolbar fixed dark color="primary">
+      <v-toolbar-title>d-DeViS</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn @click="modify = true" flat>Modify</v-btn>
+        <v-btn @click="newAudio = true" flat>Compare</v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
 
-        </v-toolbar>
-        <div>
-            <v-dialog
-                    v-model="newAudio"
-                    width="500"
-            >
-
-                <v-card>
-                    <v-card-text>
-                        <upload-form @upload="onUpload"></upload-form>
-
-                    </v-card-text>
-
-
-                </v-card>
-            </v-dialog>
-        </div>
-        <div>
-            <v-dialog v-model="modify" fullscreen hide-overlay transition="dialog-bottom-transition">
-                <v-card>
-                    <v-toolbar dark color="primary">
-                        <v-btn icon dark @click.native="modify = false">
-                            <v-icon>keyboard_backspace</v-icon>
-                        </v-btn>
-                        <v-toolbar-title>Modify Sound</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-toolbar-items>
-                            <v-btn dark flat @click.native="dialog = false">Apply</v-btn>
-                        </v-toolbar-items>
-                    </v-toolbar>
-
-                </v-card>
-            </v-dialog>
-        </div>
-
-        <div class="visualization">
-            <div class="image-zoom">
-                <div class="component">
-                    <layer-component :index="currentIndex" :layer="currentLayer" :hash="hash"
-                                     :link-template="link_template"></layer-component>
-                </div>
-            </div>
-            <div>
-                <v-tabs fixed-tabs v-model="activeLayer">
-                    <v-tab
-                            v-for="n in 3"
-                            :key="n"
-                    >
-                        Layer {{ n }}
-                    </v-tab>
-                </v-tabs>
-                <div class="image-grid">
-
-                <img :src="imageSrc(i)" @mouseover="display" v-for="i in 16" :data-index="i"
-                     :data-layer="activeLayer" alt="">
-                <!--<layer-component v-for="i in 16" v-bind:index="i" :key="i" :layer="activeLayer" :hash="hash" :link-template="link_template"></layer-component>-->
-            </div>
-            </div>
-
-        </div>
+    <div>
+      <v-dialog v-model="newAudio" width="500">
+        <v-card>
+          <v-card-text>
+            <upload-form @upload="onUpload"></upload-form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </div>
+
+    <div>
+      <v-dialog v-model="imageDialog" width="500">
+        <v-card>
+          <v-card-text>
+            <layer-component :index="currentIndex" :layer="currentLayer" :hash="hash"
+                             :link-template="link_template"></layer-component>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
+    <div>
+      <v-dialog v-model="weightDialog" width="760px">
+        <v-card>
+          <v-card-text>
+            <img :src="weightImageSrc" alt="">
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
+
+    <div>
+      <v-dialog v-model="waveformDialog" width="80%">
+        <v-card>
+          <v-card-text>
+            <img :src="waveformSrc" alt="" class="waveform-img">
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
+
+    <div>
+      <v-dialog v-model="modify" fullscreen hide-overlay transition="dialog-bottom-transition">
+        <v-card>
+          <v-toolbar dark color="primary">
+            <v-btn icon dark @click.native="modify = false">
+              <v-icon>keyboard_backspace</v-icon>
+            </v-btn>
+            <v-toolbar-title>Modify Sound</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn dark flat @click.native="dialog = false">Apply</v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+
+          <!--Modification Panel-->
+
+        </v-card>
+      </v-dialog>
+    </div>
+
+    <div class="visualization">
+      <div class="image-zoom">
+        <div class="component">
+          <h3 STYLE="text-align: center">ORIGINAL SOUND</h3>
+          <img src="../assets/spectogram.png" alt="">
+          <audio ref="originalAudio">
+            <source :src="audioSrc" type="audio/wav">
+          </audio>
+          <div class="play-button">
+            <svg class="icon" fill="#fff" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <g id="info"></g>
+              <g id="icons">
+                  <path d="M3.9,18.9V5.1c0-1.6,1.7-2.6,3-1.8l12,6.9c1.4,0.8,1.4,2.9,0,3.7l-12,6.9C5.6,21.5,3.9,20.5,3.9,18.9z" id="play">
+                  </path>
+              </g>
+            </svg>
+          </div>
+          <button @click="waveformDialog = true" class="waveform">WAVEFORM</button>
+        </div>
+      </div>
+
+      <div>
+        <h3 STYLE="text-align: center">LAYERS</h3>
+        <v-tabs fixed-tabs v-model="activeLayer">
+          <v-tab v-for="n in 3" :key="n">
+            Layer {{ n }}
+          </v-tab>
+        </v-tabs>
+
+        <div class="image-grid">
+          <img :src="imageSrc(i)" @click="display" v-for="i in 16" :data-index="i"
+               :data-layer="activeLayer + 1" alt="">
+        </div>
+        <div style="text-align: center">
+          <v-btn @click="weightDialog = true">Weight Distribution</v-btn>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </template>
 
 <script>
     import LayerComponent from '../components/LayerComponent'
     import UploadForm from '../components/AudioUploadOptions'
+    import $backend from '../backend'
 
     const print = console.log;
-    const layers = {1: 'first', 2: 'second', 3: 'third'};
+    const layers = ['first', 'second', 'third'];
 
     export default {
         name: "VisualizeLayer",
@@ -94,13 +135,13 @@
                 response = JSON.parse(response);
                 console.log(response);
                 this.digit = parseInt(response.data);
-                this['link_template'] = response['link_template'];
+                this['link_template'] = $backend.domain + response['link_template'];
                 this.hash = response.hash
             }
         },
         data() {
             return {
-                activeLayer: 1,
+                activeLayer: 0,
                 digit: '',
                 link_template: "",
                 hash: "",
@@ -108,13 +149,13 @@
                 currentIndex: 1,
                 currentLayer: 1,
                 modify: false,
-                newAudio: false
+                newAudio: false,
+                imageDialog: false,
+                weightDialog: false,
+                waveformDialog: false
             }
         },
         methods: {
-            activateLayer(layer) {
-                this.activeLayer = parseInt(layer);
-            },
             onUpload(data) {
 
             },
@@ -122,6 +163,7 @@
                 let target = event.target;
                 this.currentLayer = parseInt(target.dataset.layer);
                 this.currentIndex = parseInt(target.dataset.index);
+                this.imageDialog = true;
             },
             imageSrc(index) {
                 let filename = `${this.hash}${layers[this.activeLayer]}${index}.png`;
@@ -129,120 +171,142 @@
             }
         },
         computed: {
-            layerOneClass() {
-                return {
-                    'layer': true,
-                    'layer__step--active': this.activeLayer === 1,
-                    'layer__step--inactive': this.activeLayer !== 1,
-                }
+            weightImageSrc() {
+                let filename = `${this.hash}${layers[this.activeLayer]}_distribution.png`;
+                return this['link_template'].replace('dummy', filename);
             },
-            layerTwoClass() {
-                return {
-                    'layer': true,
-                    'layer__step--active': this.activeLayer === 2,
-                    'layer__step--inactive': this.activeLayer !== 2,
-                }
+            spectogramSrc() {
+                let filename = `${this.hash}original_spectogram.png`;
+                return this['link_template'].replace('dummy', filename);
             },
-            layerThreeClass() {
-                return {
-                    'layer': true,
-                    'layer__step--active': this.activeLayer === 3,
-                    'layer__step--inactive': this.activeLayer !== 3,
-                }
+            waveformSrc(){
+                let filename = `${this.hash}original.png`;
+                return this['link_template'].replace('dummy', filename);
             }
         }
     }
 </script>
 
 <style scoped>
-    .full-screen {
-        height: 100vh;
-        padding-top: 20px;
-    }
+  .full-screen {
+    height: 100vh;
+    padding-top: 20px;
+  }
 
-    .header {
+  .play-button, .waveform {
+    display: inline-block;
+    position: relative;
+    height: 54px;
+    width: 54px;
+    left: 0;
+    bottom: 55px;
+    z-index: 99;
+    background-color: #3c3c3c;
+    color: white;
+    padding: 7px 10px;
+    text-align: center;
+  }
 
-        height: 72px;
-        align-items: stretch;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-    }
+  .waveform {
+    width: auto;
+    border-left: 1px solid #595a5b;
+    bottom: 53px;
+  }
 
-    .v-card__text {
-        text-align: center;
-        min-height: 350px;
-        padding-top: 50px;
-    }
+  .waveform-img {
+    width: 100%;
+  }
 
-    .layer-divider {
-        display: block;
-        align-self: center;
-        margin: 0 -16px;
-        flex: 1 1 0px;
-        max-width: 100%;
-        height: 0px;
-        max-height: 0px;
-        border: solid;
-        border-width: thin 0 0 0;
-        transition: inherit;
-    }
+  .play-button .icon {
+    width: 36px;
+    height: 36px;
+  }
 
-    .layer {
-        transition: none !important;
-    }
 
-    .layer__step--active {
-        border-bottom: 2px solid white;
-        font-weight: 700;
-    }
 
-    .visualization {
-        margin: 10% auto;
-        display: flex;
-        height: 40%;
-        width: 70%;
-    }
+  .v-tabs {
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  }
 
-    .image-grid {
-        margin: 10px;
-        display: grid;
-        grid-template-columns: repeat(8, 1fr);
-        grid-template-rows: 100px 100px;
-        grid-gap: 30px 30px;
-        flex: 2
+  .v-card__text {
+    text-align: center;
+    min-height: 350px;
+    padding-top: 50px;
+  }
 
-        /*background-color: #0c5460;*/
-    }
+  .layer-divider {
+    display: block;
+    align-self: center;
+    margin: 0 -16px;
+    flex: 1 1 0px;
+    max-width: 100%;
+    height: 0px;
+    max-height: 0px;
+    border: solid;
+    border-width: thin 0 0 0;
+    transition: inherit;
+  }
 
-    .image-grid img {
-        width: 100px;
-        height: 100px;
-        align-self: start;
-    }
+  .layer {
+    transition: none !important;
+  }
 
-    .image-grid img:hover {
-        border: 3px solid #2979e3
-    }
+  .layer__step--active {
+    border-bottom: 2px solid white;
+    font-weight: 700;
+  }
 
-    .image-grid .item {
-        /*background-color: rgba(255, 255, 255, 0.8);*/
-        border: 1px solid rgba(0, 0, 0, 0.8);
-        padding: 20px;
-        font-size: 30px;
-        text-align: center;
-    }
+  .visualization {
+    margin: 10% auto;
+    display: flex;
+    height: 40%;
+    width: 80%;
+  }
 
-    .image-zoom {
-        flex: 1;
-        margin: 10px
-    }
+  .image-grid {
+    margin: 10px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: 100px 100px;
+    grid-gap: 30px 30px;
+    flex: 2
 
-    .image-zoom .component {
-        width: 250px;
-        height: 250px;
-        float: right;
-    }
+    /*background-color: #0c5460;*/
+  }
+
+  .image-grid img {
+    width: 100px;
+    height: 100px;
+    align-self: start;
+    cursor: pointer;
+  }
+
+  .image-grid img:hover {
+    border: 3px solid #2979e3
+  }
+
+  .image-grid .item {
+    /*background-color: rgba(255, 255, 255, 0.8);*/
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    font-size: 30px;
+    text-align: center;
+  }
+
+  .image-zoom {
+    flex: 1;
+    margin: 10px
+  }
+
+  .image-zoom .component {
+    width: 350px;
+    height: 400px;
+    float: left;
+  }
+
+  .component img {
+    height: 100%;
+    width: 100%;
+  }
 
 </style>

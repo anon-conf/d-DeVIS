@@ -63,14 +63,15 @@ class Audio(BaseResource):
         logger.debug(filename)
         f.save(filename)
         response = layer_viz.digit_predict(filename)
+        _hash = response['hash']
 
-        sound_plot(filename, os.path.join(App.config['STORAGE_DIR'], 'original.png'))
+        sound_plot(filename, os.path.join(App.config['STORAGE_DIR'], _hash+'original.png'))
 
         audio = AudioSegment.from_wav(filename)
         duration = audio.duration_seconds
 
         return {'success': True, 'duration': duration, 'link_template': url_for('static', filename='dummy'),
-                'data': response['data'], 'hash': response['hash']}, 201
+                'data': response['data'], 'hash': _hash}, 201
 
 def transform(type, value, audio):
     if not value:
