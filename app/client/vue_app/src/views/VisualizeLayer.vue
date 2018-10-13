@@ -40,15 +40,7 @@
       </v-dialog>
     </div>
 
-    <div>
-      <v-dialog v-model="waveformDialog" width="80%">
-        <v-card>
-          <v-card-text>
-            <img :src="waveformSrc" alt="" class="waveform-img">
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </div>
+
 
     <div>
       <v-dialog v-model="modify" fullscreen hide-overlay transition="dialog-bottom-transition">
@@ -73,21 +65,7 @@
     <div class="visualization">
       <div class="image-zoom">
         <div class="component">
-          <h3 STYLE="text-align: center">ORIGINAL SOUND</h3>
-          <img src="../assets/spectogram.png" alt="">
-          <audio ref="originalAudio">
-            <source :src="audioSrc" type="audio/wav">
-          </audio>
-          <div class="play-button">
-            <svg class="icon" fill="#fff" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <g id="info"></g>
-              <g id="icons">
-                  <path d="M3.9,18.9V5.1c0-1.6,1.7-2.6,3-1.8l12,6.9c1.4,0.8,1.4,2.9,0,3.7l-12,6.9C5.6,21.5,3.9,20.5,3.9,18.9z" id="play">
-                  </path>
-              </g>
-            </svg>
-          </div>
-          <button @click="waveformDialog = true" class="waveform">WAVEFORM</button>
+          <original-image :hash="hash" :link-template="link_template"></original-image>
         </div>
       </div>
 
@@ -115,6 +93,7 @@
 <script>
     import LayerComponent from '../components/LayerComponent'
     import UploadForm from '../components/AudioUploadOptions'
+    import OriginalImage from '../components/ImageOriginal'
     import $backend from '../backend'
 
     const print = console.log;
@@ -124,7 +103,8 @@
         name: "VisualizeLayer",
         components: {
             layerComponent: LayerComponent,
-            uploadForm: UploadForm
+            uploadForm: UploadForm,
+            originalImage: OriginalImage,
         },
         created() {
             let response = localStorage.getItem('serverResponse');
@@ -152,7 +132,6 @@
                 newAudio: false,
                 imageDialog: false,
                 weightDialog: false,
-                waveformDialog: false
             }
         },
         methods: {
@@ -175,14 +154,8 @@
                 let filename = `${this.hash}${layers[this.activeLayer]}_distribution.png`;
                 return this['link_template'].replace('dummy', filename);
             },
-            spectogramSrc() {
-                let filename = `${this.hash}original_spectogram.png`;
-                return this['link_template'].replace('dummy', filename);
-            },
-            waveformSrc(){
-                let filename = `${this.hash}original.png`;
-                return this['link_template'].replace('dummy', filename);
-            }
+
+
         }
     }
 </script>
@@ -304,9 +277,6 @@
     float: left;
   }
 
-  .component img {
-    height: 100%;
-    width: 100%;
-  }
+
 
 </style>
