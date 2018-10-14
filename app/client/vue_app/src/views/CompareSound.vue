@@ -2,52 +2,18 @@
   <div class="full-screen">
 
     <v-toolbar fixed dark color="primary">
+      <v-icon @click="$router.go(-1)">keyboard_backspace</v-icon>
       <v-toolbar-title>d-DeViS</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn @click="modify = true" flat>Modify</v-btn>
-        <v-btn @click="newAudio = true" flat>Compare</v-btn>
-      </v-toolbar-items>
+
     </v-toolbar>
 
-    <div>
-      <v-dialog v-model="newAudio" width="500">
-        <v-card>
-          <v-card-text>
-            <upload-form @upload="onUpload"></upload-form>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </div>
 
-
-
-
-
-    <div>
-      <v-dialog v-model="modify" fullscreen hide-overlay transition="dialog-bottom-transition">
-        <v-card>
-          <v-toolbar dark color="primary">
-            <v-btn icon dark @click.native="modify = false">
-              <v-icon>keyboard_backspace</v-icon>
-            </v-btn>
-            <v-toolbar-title>Modify Sound</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items>
-              <v-btn dark flat @click.native="dialog = false">Apply</v-btn>
-            </v-toolbar-items>
-          </v-toolbar>
-
-          <!--Modification Panel-->
-
-        </v-card>
-      </v-dialog>
-    </div>
 
     <div class="visualization">
       <div class="image-zoom">
         <div class="component">
-          <original-image :hash="hash" :link-template="link_template"></original-image>
+          <original-image :hash="hash" :digit="digit" :link-template="linkTemplate"></original-image>
+          <original-image :hash="hash2" :digit="digit2" :link-template="linkTemplate"></original-image>
         </div>
       </div>
 
@@ -60,16 +26,20 @@
           <v-tab>All Layers</v-tab>
 
           <v-tab-item v-for="n in 3" :key="n">
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="n"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="n"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="n"></sound-layer>
           </v-tab-item>
 
           <v-tab-item>
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="1"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="1"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="2"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="3"></sound-layer>
+            <br><br>
             <v-divider></v-divider>
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="2"></sound-layer>
             <v-divider></v-divider>
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="3"></sound-layer>
-            <v-divider></v-divider>
+            <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="1"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="2"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="3"></sound-layer>
 
           </v-tab-item>
 
@@ -101,43 +71,31 @@
         },
         created() {
             let response = localStorage.getItem('serverResponse');
-            if (!response) {
+            let response2 = localStorage.getItem('serverResponse2');
+            if (!response || !response2) {
                 alert("The model was not loaded successfully. Try uploading the file again.");
                 // this.$router.push('/')
             } else {
                 response = JSON.parse(response);
-                console.log(response);
+                response2 = JSON.parse(response2);
                 this.digit = parseInt(response.data);
-                this['link_template'] = $backend.domain + response['link_template'];
-                this.hash = response.hash
+                this.digit2 = parseInt(response2.data);
+                this.linkTemplate = $backend.domain + response['link_template'];
+                this.hash = response.hash;
+                this.hash2 = response2.hash;
             }
         },
         data() {
             return {
                 activeLayer: 0,
                 digit: '',
-                link_template: "",
+                linkTemplate: "",
                 hash: "",
-                dialog: false,
-                currentIndex: 1,
-                currentLayer: 1,
-                modify: false,
-                newAudio: false,
-                imageDialog: false,
-                weightDialog: false,
+                digit2: '',
+                hash2: "",
+
+
             }
-        },
-        methods: {
-            onUpload(response) {
-                localStorage.setItem('serverResponse2', JSON.stringify(response));
-                this.$router.push('/compare')
-
-            },
-
-        },
-        computed: {
-
-
         }
     }
 </script>
@@ -148,8 +106,8 @@
     padding-top: 20px;
   }
 
-  .v-tabs {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  .v-tabs__wrapper {
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
   }
 
   .v-card__text {

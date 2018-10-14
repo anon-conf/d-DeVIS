@@ -21,9 +21,6 @@
     </div>
 
 
-
-
-
     <div>
       <v-dialog v-model="modify" fullscreen hide-overlay transition="dialog-bottom-transition">
         <v-card>
@@ -47,7 +44,7 @@
     <div class="visualization">
       <div class="image-zoom">
         <div class="component">
-          <original-image :hash="hash" :link-template="link_template"></original-image>
+          <original-image :hash="hash" :digit="digit" :link-template="link_template"></original-image>
         </div>
       </div>
 
@@ -136,7 +133,10 @@
 
         },
         computed: {
-
+            waveformSrc() {
+                let filename = `${this.hash}original.png`;
+                return this.linkTemplate.replace('dummy', filename);
+            },
 
         }
     }
@@ -187,8 +187,6 @@
     width: 80%;
   }
 
-
-
   .image-zoom {
     flex: 1;
     margin: 10px
@@ -199,7 +197,6 @@
     height: 400px;
     float: left;
   }
-
 
 
 </style>
