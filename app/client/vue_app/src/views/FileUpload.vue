@@ -27,8 +27,9 @@
             uploadForm: UploadForm
         },
         methods: {
-            onUploaded(data){
-                console.log(data);
+            onUploaded(response){
+                localStorage.setItem('serverResponse', JSON.stringify(response));
+                this.$router.push('/layers')
             }
         }
 

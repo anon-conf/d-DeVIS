@@ -60,4 +60,37 @@
     width: 100%;
     height: 100%;
   }
+
+
+  .play-button, .waveform {
+    display: inline-block;
+    position: relative;
+    height: 54px;
+    width: 54px;
+    left: 0;
+    bottom: 55px;
+    z-index: 99;
+    background-color: #3c3c3c;
+    color: white;
+    padding: 7px 10px;
+    text-align: center;
+  }
+
+  .waveform {
+    width: auto;
+    border-left: 1px solid #595a5b;
+    bottom: 53px;
+  }
+
+  .waveform-img {
+    width: 100%;
+  }
+
+  .play-button .icon {
+    width: 36px;
+    height: 36px;
+  }
+
+
+
 </style>

@@ -27,8 +27,8 @@
 
             },
             uploadFile(response) {
-                localStorage.setItem('serverResponse', JSON.stringify(response));
-                this.$router.push('/layers')
+                this.$emit('upload', response);
+
             }
         }
     }
