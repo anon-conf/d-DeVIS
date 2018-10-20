@@ -21,6 +21,7 @@
     <div>
       <v-dialog v-model="weightDialog" width="760px">
         <v-card>
+          <div class="headline text-md-center pt-4">WEIGHT DISTRIBUTION, LAYER {{currentLayer}}</div>
           <v-card-text>
             <img :src="weightImageSrc" alt="">
           </v-card-text>

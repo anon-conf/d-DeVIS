@@ -1,21 +1,16 @@
 <template>
     <div class="layer-component">
         <div class="img-container">
+            <div class="text-uppercase title text-md-center mb-3">Layer {{layer}}: {{index}}</div>
             <img :src="imgSrc" alt=""/>
-            <audio ref="audio">
+            <audio ref="audio" controls>
                 <source :src="audioSrc" type="audio/wav">
             </audio>
-            <div class="play-button" @click="playAudio">
-                <svg class="icon" fill="#fff" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="info"></g>
-                    <g id="icons">
-                        <path d="M3.9,18.9V5.1c0-1.6,1.7-2.6,3-1.8l12,6.9c1.4,0.8,1.4,2.9,0,3.7l-12,6.9C5.6,21.5,3.9,20.5,3.9,18.9z" id="play">
-                        </path>
-                    </g>
-                </svg>
-            </div>
+            <!--<div>-->
+                <!--<v-btn  @click="playAudio"><v-icon>play_arrow</v-icon>play</v-btn>-->
+            <!--</div>-->
         </div>
-        <p>Layer {{layer}}: {{index}}</p>
+
 
     </div>
 </template>
@@ -54,7 +49,7 @@
 
         methods: {
             playAudio() {
-                this.$refs['audio'].play();
+                this.$refs['audio'].play().catch(e => console.log(e));
             }
         }
     }

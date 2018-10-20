@@ -44,6 +44,7 @@ def first_layerr(test_input, hash):
         out1 = out[0, :, :, i]
         recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size),
                                                          step_size=int(step_size), log=True, n_iter=10)
+        recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
         wavfile.write(static_filepath(hash+'first' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
         plt.imsave(static_filepath(hash+'first' + str(i+1) + '.png'), out1)
         plt.clf()
@@ -64,6 +65,7 @@ def second_layerr(test_input, hash):
         out1 = out[0, :, :, i]
         recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 2),
                                                          step_size=int(step_size), log=True, n_iter=10)
+        recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
         wavfile.write(static_filepath(hash+'second' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
         plt.imsave(static_filepath(hash+'second' + str(i+1) + '.png'), out1)
         plt.clf()
@@ -84,29 +86,32 @@ def third_layerr(test_input, hash):
         out1 = out[0, :, :, i]
         recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 4),
                                                          step_size=int(step_size) - 15, log=True, n_iter=10)
+        recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
         wavfile.write(static_filepath(hash+'third' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
         plt.imsave(static_filepath(hash+'third' + str(i+1) + '.png'), out1)
     return
 
 
-def digit_predict(filename):
+def digit_predict(filename, _hash):
     K.clear_session()
     # graph = tf.get_default_graph()
     sample_rate, samples = wavfile.read(filename)
+    if len(samples.shape) > 1:
+        samples = samples[:,0]
     resampled = signal.resample(samples, int(8000 / sample_rate * samples.shape[0]))
     samples = pad_audio(resampled)
     specgram = pretty_spectrogram(samples.astype('float64'), fft_size=fft_size,
                                   step_size=int(step_size), log=True, thresh=spec_thresh)
-    hash = str(random.getrandbits(64))
+
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 6))
     # cax = ax.matshow(np.transpose(specgram), interpolation='nearest', aspect='auto', cmap=plt.cm.afmhot, origin='lower')
     # fig.colorbar(cax)
     # plt.title('Original Spectrogram')
-    plt.imsave(static_filepath(hash + 'original_spectogram.png'), specgram)
+    plt.imsave(static_filepath(_hash + 'original_spectogram.png'), specgram)
     test_input = specgram.reshape(1, specgram.shape[0], specgram.shape[1], 1)
-    first_layerr(test_input, hash)
-    second_layerr(test_input, hash)
-    third_layerr(test_input, hash)
+    first_layerr(test_input, _hash)
+    second_layerr(test_input, _hash)
+    third_layerr(test_input, _hash)
     out = 0
     complete_layer = get_model()
     complete_layer.load_weights(os.path.join(os.path.dirname(__file__), 'model_weights.h5'))
@@ -114,11 +119,12 @@ def digit_predict(filename):
     out1 = out[0, :]
     val = np.argmax(out1).tolist()
 
-    dic = {'data': val, 'hash': hash}
+    dic = {'data': val, 'hash': _hash}
     return dic
 
 
-# digit_predict()
+# digit_predict('/home/sayeed/programs/web/SoundViz/app/storage/aoriginal.wav', '12345')
+
 
 
 def calculate():

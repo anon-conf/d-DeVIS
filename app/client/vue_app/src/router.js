@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import CompareSound from './views/CompareSound'
 import FileUpload from './views/FileUpload'
-import VisualizePage from './views/VisualizePage'
 import VisualizeLayer from './views/VisualizeLayer'
 
 Vue.use(Router);
@@ -15,11 +14,7 @@ export default new Router({
             name: 'Upload',
             component: FileUpload
         },
-        {
-            path: '/visualize',
-            name: 'visualize',
-            component: VisualizePage
-        },
+
         {
             path: '/layers',
             name: 'layers',

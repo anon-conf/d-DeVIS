@@ -28,13 +28,7 @@
             <span>Record</span>
         </span>
         <br>
-        <div v-if="uploading">
-            <v-progress-circular :indeterminate="isInfinite"
-                                 :color="'#0101d5'"></v-progress-circular>
-            <br>
-            <br>
-            <p class="message">Predicting</p>
-        </div>
+
     </form>
 </template>
 
@@ -71,11 +65,10 @@
                     }
                 };
 
-                $backend.post(`/api/resources/audio`, formData, options)
+                $backend.post(`/resources/audio`, formData, options)
                     .then(response => response.data)
                     .then(response => {
                         if (response.success) {
-
                             this.$emit('upload', response)
                         }
                     })

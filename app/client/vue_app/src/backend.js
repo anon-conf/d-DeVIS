@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const API_URL = IS_PRODUCTION ? '/' : 'http://localhost:5000/'
+const API_URL = IS_PRODUCTION ? '/api/' : 'http://localhost:5000/api/'
 
 let $axios = axios.create({
   baseURL: API_URL,

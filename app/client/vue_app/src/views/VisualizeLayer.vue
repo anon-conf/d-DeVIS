@@ -5,8 +5,11 @@
       <v-toolbar-title>d-DeViS</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
+        <v-divider vertical></v-divider>
         <v-btn @click="modify = true" flat>Modify</v-btn>
+        <v-divider vertical></v-divider>
         <v-btn @click="newAudio = true" flat>Compare</v-btn>
+        <v-divider vertical></v-divider>
       </v-toolbar-items>
     </v-toolbar>
 
@@ -31,11 +34,78 @@
             <v-toolbar-title>Modify Sound</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-              <v-btn dark flat @click.native="dialog = false">Apply</v-btn>
+              <v-btn dark flat @click.native="predict">Predict</v-btn>
             </v-toolbar-items>
           </v-toolbar>
 
           <!--Modification Panel-->
+          <div class="original-image">
+            <img :src="waveformSrc" alt="">
+          </div>
+          <div class="sliders">
+            <v-range-slider :thumb-label="'always'" v-model="parameters.slicing"
+                            v-if="modifier === 'slice'"></v-range-slider>
+            <v-range-slider :thumb-label="'always'" v-model="parameters.crossfading"
+                            v-if="modifier === 'crossfade'"></v-range-slider>
+            <v-slider :thumb-label="'always'" v-model="parameters.fade" v-if="modifier === 'fade'"></v-slider>
+            <v-menu
+                    v-model="menu.loudness"
+                    absolute
+                    :position-x="x"
+                    :position-y="y"
+                    style="max-width: 600px"
+            >
+
+              <v-list>
+                <v-list-tile
+                        v-for="value in 7"
+                        :key="value"
+                        @click="applyLoudness(value)"
+                >
+                  <v-list-tile-title>{{ value }} dB</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+            <v-menu
+                    v-model="menu.repeat"
+                    absolute
+                    :position-x="x"
+                    :position-y="y"
+                    style="max-width: 600px"
+            >
+
+              <v-list>
+                <v-list-tile
+                        v-for="value in 3"
+                        :key="value"
+                        @click="applyRepeat(value)"
+                >
+                  <v-list-tile-title>{{ value }}</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </div>
+
+          <div class="actions">
+
+            <div class="modifiers" v-if="modifier === ''">
+              <v-btn @click="modifier = 'slice'">Slice</v-btn>
+              <v-btn @click="modifier = 'crossfade'">Crossfade</v-btn>
+              <v-btn @click="showLoudnessMenu">Loudness</v-btn>
+              <v-btn @click="modifier = 'fade'">Fade</v-btn>
+              <v-btn @click="showRepeatMenu">Repeat</v-btn>
+            </div>
+            <div class="prompt" v-else>
+              <v-btn @click="modifier = ''"><i
+                      class="btn-icon">&#x274C;</i>
+                Discard
+              </v-btn>
+              <v-btn @click="apply"><i
+                      class="btn-icon">&#x2705;</i>
+                Apply
+              </v-btn>
+            </div>
+          </div>
 
         </v-card>
       </v-dialog>
@@ -44,12 +114,12 @@
     <div class="visualization">
       <div class="image-zoom">
         <div class="component">
-          <original-image :hash="hash" :digit="digit" :link-template="link_template"></original-image>
+          <original-image :hash="hash" :digit="digit" :link-template="linkTemplate"></original-image>
         </div>
       </div>
 
       <div>
-        <h3 STYLE="text-align: center">LAYERS</h3>
+        <h3 class="headline mb-2 text-md-center text-uppercase">LAYERS</h3>
         <v-tabs fixed-tabs v-model="activeLayer">
           <v-tab v-for="n in 3" :key="n">
             Layer {{ n }}
@@ -57,15 +127,18 @@
           <v-tab>All Layers</v-tab>
 
           <v-tab-item v-for="n in 3" :key="n">
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="n"></sound-layer>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="n"></sound-layer>
           </v-tab-item>
 
           <v-tab-item>
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="1"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 1</div>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="1"></sound-layer>
             <v-divider></v-divider>
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="2"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 2</div>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="2"></sound-layer>
             <v-divider></v-divider>
-            <sound-layer :link-template="link_template" :hash="hash" :current-layer="3"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 3</div>
+            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="3"></sound-layer>
             <v-divider></v-divider>
 
           </v-tab-item>
@@ -98,6 +171,7 @@
         },
         created() {
             let response = localStorage.getItem('serverResponse');
+            print(response);
             if (!response) {
                 alert("The model was not loaded successfully. Try uploading the file again.");
                 // this.$router.push('/')
@@ -105,23 +179,43 @@
                 response = JSON.parse(response);
                 console.log(response);
                 this.digit = parseInt(response.data);
-                this['link_template'] = $backend.domain + response['link_template'];
+                this['linkTemplate'] = $backend.domain + response['link_template'];
                 this.hash = response.hash
             }
         },
         data() {
             return {
+                newAudio: false,
                 activeLayer: 0,
                 digit: '',
-                link_template: "",
+                linkTemplate: "",
                 hash: "",
                 dialog: false,
                 currentIndex: 1,
                 currentLayer: 1,
+                originalFileName: 'original',
                 modify: false,
-                newAudio: false,
-                imageDialog: false,
-                weightDialog: false,
+                modifier: '',
+                x: 0,
+                y: 0,
+                menu: {
+                    repeat: false,
+                    loudness: false,
+
+                },
+                parameters: {
+                    slicing: [0, 100],
+                    crossfading: [50, 52],
+                    loudness: 0,
+                    fade: 0,
+                    repeat: 0,
+                },
+            }
+        },
+
+        watch: {
+            originalFileName(newval, oldval) {
+                print(newval, oldval);
             }
         },
         methods: {
@@ -130,11 +224,95 @@
                 this.$router.push('/compare')
 
             },
+            showLoudnessMenu(e) {
+                e.preventDefault();
+                this.menu.loudness = false;
+                this.x = e.clientX;
+                this.y = e.clientY;
+                this.$nextTick(() => {
+                    this.menu.loudness = true
+                })
+            },
+            showRepeatMenu(e) {
+                e.preventDefault();
+                this.menu.repeat = false;
+                this.x = e.clientX;
+                this.y = e.clientY;
+                this.$nextTick(() => {
+                    this.menu.repeat = true
+                })
+            },
+            sendModificationRequest(data) {
+                data.hash = this.hash;
+                data.filename = this.originalFileName;
+                $backend.get('resources/waveform', {
+                    params: data
+                }).then(response => {
+                    console.log(response);
+                    this.originalFileName = response.data.filename;
+                    this.modifier = '';
+                }).catch(error => console.log(error))
+            },
+            apply() {
+                const data = {};
+                switch (this.modifier) {
+                    case 'slice':
+                        data.sliceStart = this.parameters.slicing[0];
+                        data.sliceEnd = this.parameters.slicing[1];
+                        break;
+                    case 'crossfade':
+                        data.crossfadingStart = this.parameters.crossfading[0];
+                        data.crossfadingEnd = this.parameters.crossfading[1];
+                        break;
+                    case 'fade':
+                        data.fade = this.parameters.fade;
+                        break;
+                }
+
+                if (Object.keys(data).length !== 0)
+                    this.sendModificationRequest(data);
+
+            },
+            applyLoudness(value) {
+                const data = {
+                    loud: value,
+                };
+
+                this.sendModificationRequest(data);
+
+            },
+            applyRepeat(value) {
+                const data = {
+                    repeat: value,
+                };
+
+                this.sendModificationRequest(data);
+            },
+            predict() {
+                const data = {
+                    fname: this.originalFileName,
+                    hash: this.hash,
+                };
+                const vm = this;
+                $backend.post(`/resources/audio`, data)
+                    .then(response => response.data)
+                    .then(response => {
+                        console.log(response);
+                        localStorage.setItem('serverResponse', JSON.stringify(response));
+                        vm.digit = response.data;
+                        vm.linkTemplate = $backend.domain + response['link_template'];
+                        vm.hash = response.hash;
+                        this.originalFileName = 'original';
+                        this.modify = false;
+                        vm.$forceUpdate();
+                    })
+                    .catch(error => console.log(error))
+            }
 
         },
         computed: {
             waveformSrc() {
-                let filename = `${this.hash}original.png`;
+                let filename = `${this.hash}${this.originalFileName}.png`;
                 return this.linkTemplate.replace('dummy', filename);
             },
 
@@ -198,5 +376,24 @@
     float: left;
   }
 
+  .original-image img {
+    width: 100%;
+  }
+
+  .actions {
+    position: relative;
+    margin-top: 10%;
+  }
+
+  .modifiers, .prompt {
+    display: flex;
+    justify-content: center;
+  }
+
+  .sliders {
+    width: 80%;
+    margin: auto;
+    padding-left: 42px;
+  }
 
 </style>

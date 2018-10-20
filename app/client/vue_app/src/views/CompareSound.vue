@@ -13,6 +13,7 @@
       <div class="image-zoom">
         <div class="component">
           <original-image :hash="hash" :digit="digit" :link-template="linkTemplate"></original-image>
+          <br>
           <original-image :hash="hash2" :digit="digit2" :link-template="linkTemplate"></original-image>
         </div>
       </div>
@@ -26,19 +27,27 @@
           <v-tab>All Layers</v-tab>
 
           <v-tab-item v-for="n in 3" :key="n">
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Digit {{digit}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="n"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Digit {{digit2}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="n"></sound-layer>
           </v-tab-item>
 
           <v-tab-item>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 1, Digit {{digit}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="1"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 2, Digit {{digit}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="2"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 2, Digit {{digit}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="3"></sound-layer>
             <br><br>
             <v-divider></v-divider>
             <v-divider></v-divider>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 1, Digit {{digit2}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="1"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 2, Digit {{digit2}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="2"></sound-layer>
+            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 3, Digit {{digit2}}</div>
             <sound-layer :link-template="linkTemplate" :hash="hash2" :current-layer="3"></sound-layer>
 
           </v-tab-item>
@@ -139,7 +148,7 @@
   }
 
   .visualization {
-    margin: 10% auto;
+    margin: 4% auto;
     display: flex;
     height: 40%;
     width: 80%;

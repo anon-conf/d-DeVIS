@@ -1,5 +1,16 @@
 <template>
-    <component @upload="uploadFile" @back-click="currentComponent = 'formUpload'" @on-recorder-selected="showRecorder" :is="currentComponent"></component>
+  <div>
+    <component @upload="uploadFile" @back-click="currentComponent = 'formUpload'" @on-recorder-selected="showRecorder"
+               :is="currentComponent"></component>
+    <div v-if="uploading">
+      <v-progress-circular :indeterminate="isInfinite"
+                           :color="'#0101d5'"></v-progress-circular>
+      <br>
+      <br>
+      <p class="message">Predicting</p>
+    </div>
+
+  </div>
 </template>
 
 <script>
@@ -35,90 +46,90 @@
 </script>
 
 <style scoped>
-    .inputfile {
-        width: 0.1px;
-        height: 0.1px;
-        opacity: 0;
-        overflow: hidden;
-        position: absolute;
-        z-index: -1;
-        outline: none;
-    }
+  .inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+    outline: none;
+  }
 
-    .inputfile + label {
-        max-width: 80%;
-        font-size: 1.25rem;
-        /* 20px */
-        font-weight: 700;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        cursor: pointer;
-        display: inline-block;
-        overflow: hidden;
-        padding: 0.625rem 1.25rem;
-        outline: none;
-        /* 10px 20px */
-    }
+  .inputfile + label {
+    max-width: 80%;
+    font-size: 1.25rem;
+    /* 20px */
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    padding: 0.625rem 1.25rem;
+    outline: none;
+    /* 10px 20px */
+  }
 
-    .no-js .inputfile + label {
-        display: none;
-    }
+  .no-js .inputfile + label {
+    display: none;
+  }
 
-    .inputfile:focus + label,
-    .inputfile.has-focus + label {
-        /*outline: 1px dotted #000;*/
-        /*outline: -webkit-focus-ring-color auto 5px;*/
-    }
+  .inputfile:focus + label,
+  .inputfile.has-focus + label {
+    /*outline: 1px dotted #000;*/
+    /*outline: -webkit-focus-ring-color auto 5px;*/
+  }
 
-    .inputfile + label * {
-        /* pointer-events: none; */
-        /* in case of FastClick lib use */
-    }
+  .inputfile + label * {
+    /* pointer-events: none; */
+    /* in case of FastClick lib use */
+  }
 
-    .inputfile + label svg {
-        width: 1em;
-        height: 1em;
-        vertical-align: middle;
-        fill: currentColor;
-        margin-top: -0.25em;
-        /* 4px */
-        margin-right: 0.25em;
-        /* 4px */
-    }
+  .inputfile + label svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    fill: currentColor;
+    margin-top: -0.25em;
+    /* 4px */
+    margin-right: 0.25em;
+    /* 4px */
+  }
 
-    /* style 4 */
+  /* style 4 */
 
-    .inputfile-4 + label {
-        color: #0c0c40;
-    }
+  .inputfile-4 + label {
+    color: #0c0c40;
+  }
 
-    .inputfile-4 + label figure {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        background-color: #1d64c0;
-        display: block;
-        padding: 20px;
-        margin: 0 auto 10px;
-    }
+  .inputfile-4 + label figure {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #1d64c0;
+    display: block;
+    padding: 20px;
+    margin: 0 auto 10px;
+  }
 
-    .inputfile-4:focus + label figure,
-    .inputfile-4.has-focus + label figure,
-    .inputfile-4 + label:hover figure {
-        background-color: #2386e3;
-        outline: none;
-    }
+  .inputfile-4:focus + label figure,
+  .inputfile-4.has-focus + label figure,
+  .inputfile-4 + label:hover figure {
+    background-color: #2386e3;
+    outline: none;
+  }
 
-    .inputfile-4 + label svg {
-        width: 100%;
-        height: 100%;
-        fill: #fff;
-    }
+  .inputfile-4 + label svg {
+    width: 100%;
+    height: 100%;
+    fill: #fff;
+  }
 
-    @media screen and (max-width: 50em) {
-        .inputfile-6 + label strong {
-            display: block;
-        }
+  @media screen and (max-width: 50em) {
+    .inputfile-6 + label strong {
+      display: block;
     }
+  }
 
 </style>
