@@ -2,6 +2,8 @@
   <div>
     <component @upload-start="uploading = true" @upload="uploadFile" @back-click="currentComponent = 'formUpload'" @on-recorder-selected="showRecorder"
                :is="currentComponent"></component>
+    <br>
+
     <div v-if="uploading">
       <v-progress-circular :indeterminate="isInfinite"
                            :color="'#0101d5'"></v-progress-circular>

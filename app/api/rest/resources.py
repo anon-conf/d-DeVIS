@@ -43,7 +43,12 @@ def sound_plot(wav_file, img_file):
     samplerate, data = wavfile.read(wav_file)
     times = np.arange(len(data)) / float(samplerate)
 
-    data = [row[0] for row in data]
+    try:
+        ndata = [row[0] for row in data]
+        data = ndata
+        logger.info("has 2D y1")
+    except:
+        logger.info("has 1D y1")
     # plot making starts
     plt.figure(figsize=(30, 4))
 

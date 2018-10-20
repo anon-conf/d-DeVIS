@@ -27,7 +27,6 @@
 
             <span>Record</span>
         </span>
-        <br>
 
     </form>
 </template>

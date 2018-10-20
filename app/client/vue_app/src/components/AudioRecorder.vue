@@ -129,6 +129,7 @@
             },
             play() {
               // this.$refs.recordedAudio.play().catch(e => console.log(e));
+                console.log(this.recordedSrc);
                 const $audio = new Audio(this.recordedSrc);
                 $audio.play().catch(e => console.log(e));
 

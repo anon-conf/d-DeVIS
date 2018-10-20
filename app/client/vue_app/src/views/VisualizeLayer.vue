@@ -92,8 +92,8 @@
               <v-btn @click="play"><v-icon>play_arrow</v-icon>Play</v-btn>
               <v-btn @click="modifier = 'slice'">Slice</v-btn>
               <v-btn @click="modifier = 'crossfade'">Crossfade</v-btn>
-              <v-btn @click="showLoudnessMenu">Loudness</v-btn>
               <v-btn @click="modifier = 'fade'">Fade</v-btn>
+              <v-btn @click="showLoudnessMenu">Loudness</v-btn>
               <v-btn @click="showRepeatMenu">Repeat</v-btn>
             </div>
             <div class="prompt" v-else>
