@@ -74,7 +74,7 @@ class Audio(BaseResource):
             old_hash = vals['hash']
             filename = vals['fname']
             filename_abs = os.path.join(App.config['STORAGE_DIR'], f"{old_hash}{filename}.wav")
-            new_fname = os.path.join(App.config['STORAGE_DIR'], f"{_hash}{filename}.wav")
+            new_fname = os.path.join(App.config['STORAGE_DIR'], f"{_hash}original.wav")
             shutil.copy(filename_abs, new_fname)
             print(new_fname)
             filename = new_fname

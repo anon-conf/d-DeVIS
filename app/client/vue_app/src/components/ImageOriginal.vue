@@ -6,7 +6,7 @@
       <source :src="audioSrc" type="audio/wav">
     </audio>
     <div>
-    <v-btn @click="$refs.originalAudio.play().catch()"><v-icon>play_arrow</v-icon>play</v-btn>
+    <v-btn @click="play"><v-icon>play_arrow</v-icon>play</v-btn>
     <v-btn @click="waveformDialog = true">WAVEFORM</v-btn>
 
     </div>
@@ -37,6 +37,11 @@
             return {
                 waveformDialog: false,
 
+            }
+        },
+        methods: {
+            play(){
+                new Audio(this.audioSrc).play().catch();
             }
         },
         computed: {

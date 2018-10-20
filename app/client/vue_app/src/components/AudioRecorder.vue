@@ -14,9 +14,7 @@
       </svg>
 
     </div>
-    <audio ref="recordedAudio">
-      <source :src="recordedSrc" type="audio/wav">
-    </audio>
+
     <br>
     <p v-if="showMessage" class="body-2">Wait for the beep to sound...</p>
     <div class="actions">
@@ -34,7 +32,7 @@
                   class="btn-icon">&#x274C;</i>
             Discard
           </v-btn>
-          <v-btn @click="play">
+          <v-btn @click="play" depressed>
             <v-icon>play_arrow</v-icon>
             play
           </v-btn>
@@ -130,11 +128,10 @@
                 }, 1000)
             },
             play() {
-              const promise = this.$refs.recordedAudio.play();
+              // this.$refs.recordedAudio.play().catch(e => console.log(e));
+                const $audio = new Audio(this.recordedSrc);
+                $audio.play().catch(e => console.log(e));
 
-              if (promise !== undefined){
-                  promise.then(()=>{});
-              }
             },
             stop(){
                 recorder && recorder.stop();
@@ -149,7 +146,7 @@
                 const formData = new FormData();
 
                 formData.append('file', recordedWav);
-                // this.uploading = true;
+               this.$emit('upload-start');
 
                 let options = {
                     headers: {

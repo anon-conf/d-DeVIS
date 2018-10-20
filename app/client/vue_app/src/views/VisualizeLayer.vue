@@ -89,6 +89,7 @@
           <div class="actions">
 
             <div class="modifiers" v-if="modifier === ''">
+              <v-btn @click="play"><v-icon>play_arrow</v-icon>Play</v-btn>
               <v-btn @click="modifier = 'slice'">Slice</v-btn>
               <v-btn @click="modifier = 'crossfade'">Crossfade</v-btn>
               <v-btn @click="showLoudnessMenu">Loudness</v-btn>
@@ -307,6 +308,13 @@
                         vm.$forceUpdate();
                     })
                     .catch(error => console.log(error))
+            },
+            play(){
+               let filename = `${this.hash}${this.originalFileName}.wav`;
+               const link = this.linkTemplate.replace('dummy', filename);
+               console.log(link);
+               const ad = new Audio(link);
+               ad.play().catch(e => console.log(e));
             }
 
         },

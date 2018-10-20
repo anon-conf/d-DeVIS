@@ -57,7 +57,7 @@
                 }
 
                 formData.append('file', file)
-                this.uploading = true;
+                this.$emit('upload-start');
 
                 let options = {
                     headers: {

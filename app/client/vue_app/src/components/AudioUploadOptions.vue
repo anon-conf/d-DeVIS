@@ -1,6 +1,6 @@
 <template>
   <div>
-    <component @upload="uploadFile" @back-click="currentComponent = 'formUpload'" @on-recorder-selected="showRecorder"
+    <component @upload-start="uploading = true" @upload="uploadFile" @back-click="currentComponent = 'formUpload'" @on-recorder-selected="showRecorder"
                :is="currentComponent"></component>
     <div v-if="uploading">
       <v-progress-circular :indeterminate="isInfinite"
@@ -28,7 +28,8 @@
             return {
                 uploading: false,
                 uploadProgress: 0,
-                currentComponent: 'formUpload'
+                currentComponent: 'formUpload',
+                isInfinite: true,
             }
         },
 
