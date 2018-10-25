@@ -113,7 +113,6 @@
         overflow: hidden;
         padding: 0.625rem 1.25rem;
         outline: none;
-        margin-bottom: 7px;
     }
 
 

@@ -5,7 +5,7 @@ const API_URL = IS_PRODUCTION ? '/api/' : 'http://localhost:5000/api/'
 
 let $axios = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 50000,
   headers: {'Content-Type': 'application/json'}
 })
 
