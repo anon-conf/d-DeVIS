@@ -1,51 +1,9 @@
 # Flask-VueJs-Template
 
-[![Build Status](https://travis-ci.org/gtalarico/flask-vuejs-template.svg?branch=master)](https://travis-ci.org/gtalarico/flask-vuejs-template)
-[![codecov](https://codecov.io/gh/gtalarico/flask-vuejs-template/branch/master/graph/badge.svg)](https://codecov.io/gh/gtalarico/flask-vuejs-template)
-
-_Flask + Vue.js Web Application Template_
-
-![Vue Logo](/docs/vue-logo.png "Vue Logo") ![Flask Logo](/docs/flask-logo.png "Flask Logo")
-
-[Live Demo](https://flask-vuejs-template.herokuapp.com/#/api)
-
-## Django
-
-Prefer Django? Checkout the [Django VueJs Template](https://github.com/gtalarico/django-vue-template).
 
 ## Features
-* Minimal Flask App with modular Config
-* [Flask-RestPlus](http://flask-restplus.readthedocs.io) API with class-based secure resource routing
-* Starter [PyTest](http://pytest.org) test suite
-* [vue-cli 3](https://github.com/vuejs/vue-cli/blob/dev/docs/README.md) with Babel and ESlint.
-* [Vuex](https://vuex.vuejs.org/) for state management
-* [Vue Router](https://router.vuejs.org/)
-* [Axios](https://vuex.vuejs.org/) for backend communication
-* Sample Vue [Filters](https://vuejs.org/v2/guide/filters.html)
-* Heroku Configuration with one-click deployment
-
-## Template Structure
-
-The template uses Flask & Flask-RestPlus to create a REST style API,
-and let's VueJs + vue-cli handle the front end and asset pipline.
-
-### Blueprints
-
-The Flask application is setup with with two blueprints:
 
 
-#### Api Blueprint
-
-Uses Flask-RestPlus to serve resources at the `/api` endpoint.
-Flask-RestPlus can be discarded if you prefer standard view functions routing.
-
-#### Client Blueprint
-
-A simple Flask view is used to serve the entry point into the Vue application at the root endpoint `/`
-The template uses vue-cli 3 and assumes Vue.js & Webpack will manage front-end resources and assets,
-so it does overwrite template delimiter.
-
-The Vue instance is preconfigured with Filters, Vue-Router, Vuex; each of these can easilly removed if they are not desired.
 
 ## Installation
 
@@ -59,7 +17,7 @@ The Vue instance is preconfigured with Filters, Vue-Router, Vuex; each of these 
 * Clone this repository:
 
 	```
-	$ git clone https://github.com/gtalarico/flask-vuejs-template.git
+	$ git clone https://github.com/anon-conf/d-DeVIS.git
 	```
 
 * Create a [virtual enviroment](https://packaging.python.org/tutorials/managing-dependencies/#managing-dependencies) (highly recommended)
@@ -123,21 +81,3 @@ $ python -m app build
 This commands is a shorcut for cd-ing into `/app/client/vue_app` and running `$ npm run build`.
 
 * Commit your code
-
-* Setup your heroku app:
-
-	```
-	$ heroku apps:create flask-vuejs-template
-	$ heroku config:set FLASK_CONFIG=Production
-	$ heroku config:set SECRET=SECRETKEY
-	$ heroku git:remote --app flask-vuejs-template
-	```
-* Push your application to heroku:
-
-	```$ git push heroku```
-
-### Heroku deployment - One Click Deploy
-
-You can spin up your on version of this template on Heroku:
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/gtalarico/flask-vuejs-template)
