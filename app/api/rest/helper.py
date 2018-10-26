@@ -215,11 +215,11 @@ def log_specgram(audio, sample_rate, window_size=20,
   
 def pad_audio(samples, t=1, L=8000):
     if len(samples) >= t*L: return samples
-    else: return np.pad(samples, pad_width=(L - len(samples), 0), mode='constant', constant_values=(0, 0))
+    else: return np.pad(samples, pad_width=(t*L - len(samples), 0), mode='constant', constant_values=(0, 0))
 
 def chop_audio(samples, t=1, L=8000):
     if len(samples) <= t*L: return samples
-    else: return samples[0:L] 
+    else: return samples[0:t*L] 
 
 def label_transform(labels):
     nlabels = []
