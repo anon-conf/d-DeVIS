@@ -198,6 +198,9 @@ class SoundWaveImage(BaseResource):
         elif 'loud' in params:
             audio = self.loud(audio, params.get('loud', type=int))
             modified = True
+        elif 'invert' in params:
+            audio = audio.reverse()
+            modified = True
 
         filename = ""
 

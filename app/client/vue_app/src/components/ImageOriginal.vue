@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="headline mb-2 text-md-center text-uppercase">PREDICTED DIGIT: {{digit}}</h2>
+    <h2 class="headline mb-2 text-md-center text-uppercase">{{title}}: {{digit}}</h2>
     <img :src="imageSrc" alt="">
     <audio ref="originalAudio">
       <source :src="audioSrc" type="audio/wav">
@@ -14,7 +14,7 @@
       <v-dialog v-model="waveformDialog" width="80%">
         <v-card>
           <v-card-title>
-            <div  class="headline text-center">WAVEFORM, DIGIT {{digit}}</div>
+            <div style="width: 100%;"  class="headline text-md-center text-uppercase">{{waveformTitle}} {{digit}}</div>
           </v-card-title>
           <v-card-text>
             <img :src="waveformSrc" alt="" class="waveform-img">
@@ -31,7 +31,16 @@
         props: {
             hash: String,
             linkTemplate: String,
-            digit: Number
+            digit: Number,
+            title: {
+                type: String,
+                default: 'Predicted digit'
+            },
+            waveformTitle: {
+                type: String,
+                default: 'WAVEFORM, Original Prediction'
+            },
+
         },
         data() {
             return {

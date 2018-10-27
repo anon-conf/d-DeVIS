@@ -34,7 +34,7 @@
             <v-toolbar-title>Modify Sound</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-              <v-btn dark flat @click.native="predict">Predict</v-btn>
+              <v-btn :loding="isPredicting" dark flat @click.native="predict">Predict</v-btn>
             </v-toolbar-items>
           </v-toolbar>
 
@@ -93,6 +93,7 @@
               <v-btn @click="modifier = 'slice'">Slice</v-btn>
               <v-btn @click="modifier = 'crossfade'">Crossfade</v-btn>
               <v-btn @click="modifier = 'fade'">Fade</v-btn>
+              <v-btn @click="invert()">Invert</v-btn>
               <v-btn @click="showLoudnessMenu">Loudness</v-btn>
               <v-btn @click="showRepeatMenu">Repeat</v-btn>
             </div>
@@ -132,15 +133,18 @@
           </v-tab-item>
 
           <v-tab-item>
+            <div class="group-odd">
             <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 1</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="1"></sound-layer>
+            </div>
             <v-divider></v-divider>
             <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 2</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="2"></sound-layer>
             <v-divider></v-divider>
+            <div class="group-odd">
             <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 3</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="3"></sound-layer>
-            <v-divider></v-divider>
+            </div>
 
           </v-tab-item>
 
@@ -186,6 +190,7 @@
         },
         data() {
             return {
+                isPredicting: false,
                 newAudio: false,
                 activeLayer: 0,
                 digit: '',
@@ -289,7 +294,16 @@
 
                 this.sendModificationRequest(data);
             },
+
+            invert(){
+                const data = {
+                    invert: true,
+                };
+
+                this.sendModificationRequest(data);
+            },
             predict() {
+                this.isPredicting = true;
                 const data = {
                     fname: this.originalFileName,
                     hash: this.hash,
@@ -299,13 +313,15 @@
                     .then(response => response.data)
                     .then(response => {
                         console.log(response);
-                        localStorage.setItem('serverResponse', JSON.stringify(response));
-                        vm.digit = response.data;
-                        vm.linkTemplate = $backend.domain + response['link_template'];
-                        vm.hash = response.hash;
-                        this.originalFileName = 'original';
-                        this.modify = false;
-                        vm.$forceUpdate();
+                        this.isPredicting = false;
+                        localStorage.setItem('serverResponse2', JSON.stringify(response));
+                        this.$router.push('/compare-modified');
+                        // vm.digit = response.data;
+                        // vm.linkTemplate = $backend.domain + response['link_template'];
+                        // vm.hash = response.hash;
+                        // this.originalFileName = 'original';
+                        // this.modify = false;
+                        // vm.$forceUpdate();
                     })
                     .catch(error => console.log(error))
             },
@@ -403,5 +419,10 @@
     margin: auto;
     padding-left: 42px;
   }
+  .group-odd{
+    background-color: #f3f5f7;
+    padding: 10px 0;
+  }
+
 
 </style>
