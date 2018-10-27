@@ -86,10 +86,23 @@
             </v-menu>
           </div>
 
+          <br>
+
+          <div v-if="uploading">
+            <v-progress-circular :indeterminate="isInfinite"
+                                 :color="'#0101d5'"></v-progress-circular>
+            <br>
+            <br>
+            <p class="message">Predicting</p>
+          </div>
+
           <div class="actions">
 
             <div class="modifiers" v-if="modifier === ''">
-              <v-btn @click="play"><v-icon>play_arrow</v-icon>Play</v-btn>
+              <v-btn @click="play">
+                <v-icon>play_arrow</v-icon>
+                Play
+              </v-btn>
               <v-btn @click="modifier = 'slice'">Slice</v-btn>
               <v-btn @click="modifier = 'crossfade'">Crossfade</v-btn>
               <v-btn @click="modifier = 'fade'">Fade</v-btn>
@@ -134,16 +147,16 @@
 
           <v-tab-item>
             <div class="group-odd">
-            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 1</div>
-            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="1"></sound-layer>
+              <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 1</div>
+              <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="1"></sound-layer>
             </div>
             <v-divider></v-divider>
             <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 2</div>
             <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="2"></sound-layer>
             <v-divider></v-divider>
             <div class="group-odd">
-            <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 3</div>
-            <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="3"></sound-layer>
+              <div class="title ma-4 text-uppercase" style="text-align: center;">Layer 3</div>
+              <sound-layer :link-template="linkTemplate" :hash="hash" :current-layer="3"></sound-layer>
             </div>
 
           </v-tab-item>
@@ -192,6 +205,7 @@
             return {
                 isPredicting: false,
                 newAudio: false,
+                uploading: false,
                 activeLayer: 0,
                 digit: '',
                 linkTemplate: "",
@@ -295,7 +309,7 @@
                 this.sendModificationRequest(data);
             },
 
-            invert(){
+            invert() {
                 const data = {
                     invert: true,
                 };
@@ -304,6 +318,7 @@
             },
             predict() {
                 this.isPredicting = true;
+                this.uploading = true;
                 const data = {
                     fname: this.originalFileName,
                     hash: this.hash,
@@ -324,13 +339,14 @@
                         // vm.$forceUpdate();
                     })
                     .catch(error => console.log(error))
+                    .finally(() => this.uploading = false);
             },
-            play(){
-               let filename = `${this.hash}${this.originalFileName}.wav`;
-               const link = this.linkTemplate.replace('dummy', filename);
-               console.log(link);
-               const ad = new Audio(link);
-               ad.play().catch(e => console.log(e));
+            play() {
+                let filename = `${this.hash}${this.originalFileName}.wav`;
+                const link = this.linkTemplate.replace('dummy', filename);
+                console.log(link);
+                const ad = new Audio(link);
+                ad.play().catch(e => console.log(e));
             }
 
         },
@@ -419,7 +435,8 @@
     margin: auto;
     padding-left: 42px;
   }
-  .group-odd{
+
+  .group-odd {
     background-color: #f3f5f7;
     padding: 10px 0;
   }
