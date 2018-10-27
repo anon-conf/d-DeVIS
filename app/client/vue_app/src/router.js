@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import CompareModified from './views/CompareModified'
-import CompareSound from './views/CompareSound'
-import FileUpload from './views/FileUpload'
-import VisualizeLayer from './views/VisualizeLayer'
+const CompareModified = () => import('./views/CompareModified');
+const CompareSound = () => import('./views/CompareSound');
+const FileUpload = () => import('./views/FileUpload');
+const VisualizeLayer = () => import('./views/VisualizeLayer');
 
 Vue.use(Router);
 

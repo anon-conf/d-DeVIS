@@ -18,14 +18,14 @@ class Config(object):
 
 
 class Development(Config):
-    DEBUG = False
+    DEBUG = True
     PRODUCTION = False
     SECRET_KEY = 'SuperSecretKey'
 
 
 
 class Production(Config):
-    DEBUG = False
+    DEBUG = True
     PRODUCTION = True
     SECRET_KEY = os.environ.get('SECRET_KEY', 'UnsafeSecret')
 

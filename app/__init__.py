@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_compress import Compress
 import click
 from flask_cors import CORS
 
@@ -11,6 +12,7 @@ app = Flask(__name__, static_folder='storage')
 app.register_blueprint(api_bp)
 app.register_blueprint(client_bp)
 CORS(app)
+Compress(app)
 
 from . import config
 app.logger.info('>>> {}'.format(config.flask_config))

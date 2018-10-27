@@ -28,6 +28,7 @@ Keras = "*"
 Flask = "*"
 flask_cors = "*"
 tensorflow = "*"
+flask-compress = "*"
 
 [dev-packages]
 

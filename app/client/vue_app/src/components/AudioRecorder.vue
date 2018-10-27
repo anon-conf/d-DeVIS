@@ -56,8 +56,6 @@
     import $backend from '../backend'
 
 
-    // console.log(Recorderdef.Recorder);
-    // const Recorder = Recorderdef.default;
     const beep = new Audio(beepwav);
     let recorder;
     let recordedWav = null;
