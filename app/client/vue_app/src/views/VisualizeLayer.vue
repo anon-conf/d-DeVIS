@@ -88,8 +88,8 @@
 
           <br>
 
-          <div v-if="uploading">
-            <v-progress-circular :indeterminate="isInfinite"
+          <div v-if="uploading" style="text-align: center">
+            <v-progress-circular :indeterminate="true"
                                  :color="'#0101d5'"></v-progress-circular>
             <br>
             <br>
