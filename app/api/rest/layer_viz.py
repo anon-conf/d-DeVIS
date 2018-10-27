@@ -1,5 +1,7 @@
 import os
 import random
+import time
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -33,6 +35,18 @@ basepath = ''
 def static_filepath(filepath):
     return os.path.join(basepath, filepath)
 
+
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print('{:s} function took {:.3f} ms'.format(f.__name__, (time2-time1)*1000.0))
+
+        return ret
+    return wrap
+
+@timing
 def first_layerr(test_input, hash):
     K.clear_session()
     first_layer = load_model(os.path.join(os.path.dirname(__file__), 'first_layer.hdf5'))
@@ -43,7 +57,8 @@ def first_layerr(test_input, hash):
     plt.savefig(static_filepath(hash+'first_distribution.png'))
     plt.clf()
     layer = 'first'
-    threading.Thread(target=save_layer_image, args=(hash, layer, out)).start()
+    # threading.Thread(target=save_layer_image, args=(hash, layer, out)).start()
+    save_layer_image(hash, layer, out)
     return
 
 
@@ -58,7 +73,7 @@ def save_layer_image(hash, layer, out, divisor = 1):
         plt.imsave(static_filepath(hash + layer + str(i + 1) + '.png'), out1)
         plt.clf()
 
-
+@timing
 def second_layerr(test_input, hash):
     K.clear_session()
     second_layer = load_model(os.path.join(os.path.dirname(__file__), 'second_layer.hdf5'))
@@ -70,7 +85,8 @@ def second_layerr(test_input, hash):
     plt.clf()
     layer = 'second'
     divisor = 2
-    threading.Thread(target=save_second_layer_image, args=(divisor, hash, layer, out)).start()
+    # threading.Thread(target=save_second_layer_image, args=(divisor, hash, layer, out)).start()
+    save_second_layer_image(divisor, hash, layer, out)
     return
 
 
@@ -84,7 +100,7 @@ def save_second_layer_image(divisor, hash, layer, out):
         plt.imsave(static_filepath(hash + layer + str(i + 1) + '.png'), out1)
         plt.clf()
 
-
+@timing
 def third_layerr(test_input, hash):
     K.clear_session()
     third_layer = load_model(os.path.join(os.path.dirname(__file__), 'third_layer.hdf5'))
@@ -96,7 +112,8 @@ def third_layerr(test_input, hash):
     plt.clf()
     layer = 'third'
     divisor = 4
-    threading.Thread(target=save_third_layer_image, args=(divisor, hash, layer, out)).start()
+    # threading.Thread(target=save_third_layer_image, args=(divisor, hash, layer, out)).start()
+    save_third_layer_image(divisor, hash, layer, out)
     return
 
 
@@ -109,7 +126,7 @@ def save_third_layer_image(divisor, hash, layer, out):
         wavfile.write(static_filepath(hash + layer + str(i + 1) + '.wav'), 8000, recovered_audio_orig)
         plt.imsave(static_filepath(hash + layer + str(i + 1) + '.png'), out1)
 
-
+@timing
 def digit_predict(filename, _hash):
     global basepath
     basepath = App.config['STORAGE_DIR']
@@ -130,18 +147,29 @@ def digit_predict(filename, _hash):
     # plt.title('Original Spectrogram')
     plt.imsave(static_filepath(_hash + 'original_spectogram.png'), specgram)
     test_input = specgram.reshape(1, specgram.shape[0], specgram.shape[1], 1)
-    first_layerr(test_input, _hash)
-    second_layerr(test_input, _hash)
-    third_layerr(test_input, _hash)
+    # threading.Thread(target=three_layer_predict, args=(_hash, test_input)).start()
+    three_layer_predict(_hash, test_input)
     out = 0
-    complete_layer = get_model()
-    complete_layer.load_weights(os.path.join(os.path.dirname(__file__), 'model_weights.h5'))
-    out = complete_layer.predict(test_input)
+    out = complete_predict(out, test_input)
     out1 = out[0, :]
     val = np.argmax(out1).tolist()
 
     dic = {'data': val, 'hash': _hash}
     return dic
+
+@timing
+def three_layer_predict(_hash, test_input):
+    first_layerr(test_input, _hash)
+    second_layerr(test_input, _hash)
+    third_layerr(test_input, _hash)
+
+
+@timing
+def complete_predict(out, test_input):
+    complete_layer = get_model()
+    complete_layer.load_weights(os.path.join(os.path.dirname(__file__), 'model_weights.h5'))
+    out = complete_layer.predict(test_input)
+    return out
 
 
 # digit_predict('/home/sayeed/programs/web/SoundViz/app/storage/aoriginal.wav', '12345')
