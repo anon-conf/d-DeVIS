@@ -100,6 +100,7 @@ def digit_predict(filename, _hash):
         samples = samples[:,0]
     resampled = signal.resample(samples, int(8000 / sample_rate * samples.shape[0]))
     samples = pad_audio(resampled)
+    samples = chop_audio(samples)
     specgram = pretty_spectrogram(samples.astype('float64'), fft_size=fft_size,
                                   step_size=int(step_size), log=True, thresh=spec_thresh)
 
