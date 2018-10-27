@@ -12,6 +12,7 @@ from scipy import signal
 from scipy.io import wavfile
 
 from .helper import *
+import threading
 
 
 # global graph,model
@@ -27,9 +28,10 @@ shorten_factor = 10  # how much should we compress the x-axis (time)
 start_freq = 300  # Hz # What frequency to start sampling our melS from
 end_freq = 8000  # Hz # What frequency to stop sampling our melS from
 
+basepath = ''
 
 def static_filepath(filepath):
-    return os.path.join(App.config['STORAGE_DIR'], filepath)
+    return os.path.join(basepath, filepath)
 
 def first_layerr(test_input, hash):
     K.clear_session()
@@ -40,15 +42,21 @@ def first_layerr(test_input, hash):
     plt.plot(bla.flatten())
     plt.savefig(static_filepath(hash+'first_distribution.png'))
     plt.clf()
+    layer = 'first'
+    threading.Thread(target=save_layer_image, args=(hash, layer, out)).start()
+    return
+
+
+def save_layer_image(hash, layer, out, divisor = 1):
+    # with App.test_
     for i in range(0, 16):
         out1 = out[0, :, :, i]
-        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size),
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size/divisor),
                                                          step_size=int(step_size), log=True, n_iter=10)
         recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
-        wavfile.write(static_filepath(hash+'first' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
-        plt.imsave(static_filepath(hash+'first' + str(i+1) + '.png'), out1)
+        wavfile.write(static_filepath(hash + layer + str(i + 1) + '.wav'), 8000, recovered_audio_orig)
+        plt.imsave(static_filepath(hash + layer + str(i + 1) + '.png'), out1)
         plt.clf()
-    return
 
 
 def second_layerr(test_input, hash):
@@ -60,16 +68,21 @@ def second_layerr(test_input, hash):
     plt.plot(bla.flatten())
     plt.savefig(static_filepath(hash+'second_distribution.png'))
     plt.clf()
+    layer = 'second'
+    divisor = 2
+    threading.Thread(target=save_second_layer_image, args=(divisor, hash, layer, out)).start()
+    return
 
+
+def save_second_layer_image(divisor, hash, layer, out):
     for i in range(0, 16):
         out1 = out[0, :, :, i]
-        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 2),
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / divisor),
                                                          step_size=int(step_size), log=True, n_iter=10)
         recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
-        wavfile.write(static_filepath(hash+'second' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
-        plt.imsave(static_filepath(hash+'second' + str(i+1) + '.png'), out1)
+        wavfile.write(static_filepath(hash + layer + str(i + 1) + '.wav'), 8000, recovered_audio_orig)
+        plt.imsave(static_filepath(hash + layer + str(i + 1) + '.png'), out1)
         plt.clf()
-    return
 
 
 def third_layerr(test_input, hash):
@@ -81,18 +94,25 @@ def third_layerr(test_input, hash):
     plt.plot(bla.flatten())
     plt.savefig(static_filepath(hash+'third_distribution.png'))
     plt.clf()
-
-    for i in range(0, 16):
-        out1 = out[0, :, :, i]
-        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / 4),
-                                                         step_size=int(step_size) - 15, log=True, n_iter=10)
-        recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
-        wavfile.write(static_filepath(hash+'third' + str(i+1) + '.wav'), 8000, recovered_audio_orig)
-        plt.imsave(static_filepath(hash+'third' + str(i+1) + '.png'), out1)
+    layer = 'third'
+    divisor = 4
+    threading.Thread(target=save_third_layer_image, args=(divisor, hash, layer, out)).start()
     return
 
 
+def save_third_layer_image(divisor, hash, layer, out):
+    for i in range(0, 16):
+        out1 = out[0, :, :, i]
+        recovered_audio_orig = invert_pretty_spectrogram(out1, fft_size=int(fft_size / divisor),
+                                                         step_size=int(step_size) - 15, log=True, n_iter=10)
+        recovered_audio_orig = np.asarray(recovered_audio_orig, dtype=np.int16)
+        wavfile.write(static_filepath(hash + layer + str(i + 1) + '.wav'), 8000, recovered_audio_orig)
+        plt.imsave(static_filepath(hash + layer + str(i + 1) + '.png'), out1)
+
+
 def digit_predict(filename, _hash):
+    global basepath
+    basepath = App.config['STORAGE_DIR']
     K.clear_session()
     # graph = tf.get_default_graph()
     sample_rate, samples = wavfile.read(filename)
