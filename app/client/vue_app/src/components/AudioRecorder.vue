@@ -51,7 +51,7 @@
 </template>
 
 <script>
-    import Recorderdef from '../recorder'
+    import Recorder from '../recorder'
     import beepwav from '../assets/beep.wav'
     import $backend from '../backend'
 
