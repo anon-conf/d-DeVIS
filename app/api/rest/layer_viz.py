@@ -15,6 +15,7 @@ from scipy.io import wavfile
 
 from .helper import *
 import threading
+from multiprocessing import Process
 
 
 # global graph,model
@@ -58,7 +59,9 @@ def first_layerr(test_input, hash):
     plt.clf()
     layer = 'first'
     # threading.Thread(target=save_layer_image, args=(hash, layer, out)).start()
-    save_layer_image(hash, layer, out)
+    # save_layer_image(hash, layer, out)
+    p = Process(None, target=save_layer_image, args=(hash, layer, out))
+    p.start()
     return
 
 
@@ -86,7 +89,8 @@ def second_layerr(test_input, hash):
     layer = 'second'
     divisor = 2
     # threading.Thread(target=save_second_layer_image, args=(divisor, hash, layer, out)).start()
-    save_second_layer_image(divisor, hash, layer, out)
+    Process(target=save_second_layer_image, args=(divisor, hash, layer, out)).start()
+    # save_second_layer_image(divisor, hash, layer, out)
     return
 
 
@@ -113,6 +117,7 @@ def third_layerr(test_input, hash):
     layer = 'third'
     divisor = 4
     # threading.Thread(target=save_third_layer_image, args=(divisor, hash, layer, out)).start()
+    Process(target=save_third_layer_image, args=(divisor, hash, layer, out)).start()
     save_third_layer_image(divisor, hash, layer, out)
     return
 
