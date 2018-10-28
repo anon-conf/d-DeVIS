@@ -81,15 +81,15 @@ This commands is a shorcut for cd-ing into `/app/client/vue_app` and running `$ 
 
 ## Features
 
-# Visualizing the Hidden Extracted Features of Convolutional neural networks: 
+#### Visualizing the Hidden Extracted Features of Convolutional neural networks: 
 d-DeVIS provides visualization of the extracted features in each layer as image data and shows the various features of different filters of the deep Convolutional Neural Network. Users can also hear the audio representation of the hidden extracted features.
-# Interactive User Experience:
+#### Interactive User Experience:
 For a fluid user experience,we provide an interactive platform for the users so that they will be able to focus on the productivity of the system without any unnecessary hassle.
-# Visualizing the Audio Features as well as Modifying the Waveforms: 
+#### Visualizing the Audio Features as well as Modifying the Waveforms: 
 Due to the complex structure of audio data, our system let's users modify various aspects of the sound property and visualize the updated waveform to provide a keen knowledge on audio data representation.
-# Custom Audio Input for Testing and Feature Distribution Visualization: 
+#### Custom Audio Input for Testing and Feature Distribution Visualization: 
 User can not only upload a default audio data but also they can record custom speech to test the trained model. Proper distribution of the weights is also visualized.
-# Comparing different audio inputs and their hidden features: 
+#### Comparing different audio inputs and their hidden features: 
 d-DeVIS also enables users to measure the differences of different audio inputs and check their extracted layer features.
 
 ## Abstract
